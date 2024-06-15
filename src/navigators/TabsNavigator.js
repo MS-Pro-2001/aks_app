@@ -21,6 +21,7 @@ export default function TabsNavigator() {
               size={size}
             />
           ),
+          headerTitleAlign: 'center',
         }}
       />
 

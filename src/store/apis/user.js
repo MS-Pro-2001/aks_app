@@ -2,14 +2,24 @@ import { createApiInstance } from '.';
 
 const extendedApi = createApiInstance.injectEndpoints({
   endpoints: (build) => ({
-    example: build.query({
-      query: () => 'test',
+    registerUser: build.mutation({
+      query(body) {
+        console.log({ body });
+        return {
+          url: 'api/auth/register',
+          method: 'POST',
+          body: body,
+        };
+      },
+      transformErrorResponse: (res) => {
+        return res;
+      },
     }),
   }),
   overrideExisting: false,
 });
 
-export const { useExampleQuery } = extendedApi;
+export const { useRegisterUserMutation } = extendedApi;
 
 // import { createApiInstance } from './createApiInstance';
 

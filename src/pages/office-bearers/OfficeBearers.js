@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     borderColor: 'blue',
     borderRadius: 30,
     padding: 10,
-    color: '#213190',
+    color: '#005b96',
   },
   listItem: {
     flex: 1,
@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 20,
     marginTop: 8,
+    color: '#005b96',
   },
   photo: {
     borderWidth: 1,
@@ -50,10 +51,7 @@ const styles = StyleSheet.create({
 const OfficeBearers = () => {
   const [searchedQuery, setSearchedQuery] = useState('');
 
-  const { data, error, isLoading } = useFetchOfficeBearersQuery();
-  console.log({ data });
-
-  // }, []);
+  const { data, isLoading } = useFetchOfficeBearersQuery();
 
   return (
     <View>
@@ -67,14 +65,14 @@ const OfficeBearers = () => {
         {/* <TextInput onChangeText={(value) => setSearchedQuery(value)} placeholderTextColor={"grey"} style={styles.InputBox} placeholder='search here...' /> */}
       </View>
       <View style={styles.entriesCount}>
-        <Text>
+        <Text style={{ color: '#005b96', marginLeft: 5 }}>
           Total entries:{' '}
           {
             data?.filter((item) =>
               item?.firstName
                 .toLowerCase()
                 .includes(searchedQuery.toLowerCase())
-            ).length
+            )?.length
           }
         </Text>
         <Text style={styles.border} />
@@ -87,9 +85,9 @@ const OfficeBearers = () => {
         />
         <SafeAreaView style={styles.container}>
           <FlatList
-            // data={userData?.filter((item) =>
-            //   item.firstName.toLowerCase().includes(searchedQuery.toLowerCase())
-            // )}
+            data={data?.filter((item) =>
+              item.firstName.toLowerCase().includes(searchedQuery.toLowerCase())
+            )}
             renderItem={({ item }) => {
               return (
                 <TouchableRipple

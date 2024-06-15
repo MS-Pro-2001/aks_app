@@ -57,10 +57,9 @@ const Wards = ({ navigation }) => {
     },
     InputBox: {
       borderWidth: 2,
-      borderColor: 'blue',
-      borderRadius: 30,
+      borderColor: theme.colors.primary,
+      borderRadius: 50,
       padding: 10,
-      // color: '#213190',
     },
     entriesCount: {
       margin: 5,
@@ -94,7 +93,8 @@ const Wards = ({ navigation }) => {
       </View>
       <View style={styles.entriesCount}>
         <Text style={{ color: theme.colors.primary, marginLeft: 5 }}>
-          Total wards: {filteredWards.length}
+          {searchedQuery?.length ? 'Search records' : 'Total wards'}:{' '}
+          {filteredWards.length}
         </Text>
         <Text style={styles.border} />
       </View>
