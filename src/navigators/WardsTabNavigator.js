@@ -4,15 +4,32 @@ import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import OfficeBearers from '../pages/office-bearers/OfficeBearers';
 import Wards from '../pages/wards/Wards';
+import Directory from '../pages/directory/Directory';
+import WardCommittee from '../pages/wardCommittee/WardCommittee';
 // import Wards from '../pages/wards/Wards';
 const Tab = createBottomTabNavigator();
 
-export default function TabsNavigator() {
+export function WardTabsNavigator({ route }) {
+  const { userWard } = route.params;
+
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="Wards"
-        component={Wards}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" color={color} size={size} />
+          ),
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerTintColor: '#213190',
+          headerTitle: `${userWard}`,
+        }}
+        name="Directory"
+        component={Directory}
+        initialParams={{ userWard }}
+      />
+
+      <Tab.Screen
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -21,26 +38,14 @@ export default function TabsNavigator() {
               size={size}
             />
           ),
-          headerTitleAlign: 'center',
-          headerShown: false,
-        }}
-      />
-
-      <Tab.Screen
-        name="Office Bearers"
-        component={OfficeBearers}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="file-account"
-              color={color}
-              size={size}
-            />
-          ),
-          headerShown: false,
+          headerShown: true,
           headerTitleAlign: 'center',
           headerTintColor: '#213190',
+          headerTitle: `${userWard}`,
         }}
+        name="Ward Comittee"
+        component={WardCommittee}
+        initialParams={{ userWard }}
       />
     </Tab.Navigator>
   );

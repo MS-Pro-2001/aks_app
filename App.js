@@ -1,17 +1,17 @@
 // In App.js in a new project
-
+import 'react-native-gesture-handler';
 import * as React from 'react';
 // import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import { HomeScreen } from './src/pages/homeScreen/Home';
-import { DetailsScreen } from './src/pages/userDetails/userDetailsPage';
-import TabsNavigator from './src/navigators/TabsNavigator';
+
 import { useSelector } from 'react-redux';
 import { userSelector } from './src/store/user';
 import SignUp from './src/pages/signUp/SignUp';
 import SignIn from './src/pages/signIn/SignIn';
 import DrawerNavigator from './src/navigators/DrawerNavigator';
+import { WardTabsNavigator } from './src/navigators/WardsTabNavigator';
 // import { SafeAreaProvider } from 'react-native-safe-area-context';
 const Stack = createNativeStackNavigator();
 
@@ -22,13 +22,23 @@ function App() {
     <NavigationContainer>
       <Stack.Navigator>
         {isUserLoggedIn ? (
-          <Stack.Screen
-            name="Home"
-            component={DrawerNavigator}
-            options={{
-              headerShown: false,
-            }}
-          />
+          <>
+            <Stack.Screen
+              name="Drawer"
+              component={DrawerNavigator}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="WardTabsNavigator"
+              component={WardTabsNavigator}
+              options={{
+                headerShown: true,
+                headerTitle: 'Wards',
+              }}
+            />
+          </>
         ) : (
           <>
             <Stack.Screen
@@ -44,11 +54,6 @@ function App() {
               options={{
                 headerShown: false,
               }}
-            />
-            <Stack.Screen
-              name="Details"
-              component={DetailsScreen}
-              options={{ title: 'DETAILS' }}
             />
           </>
         )}

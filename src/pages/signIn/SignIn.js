@@ -11,7 +11,8 @@ import { Controller, useForm } from 'react-hook-form';
 // import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
-import { loginUser } from '../../store/user';
+import { loginUser, setCurrentUserInfo } from '../../store/user';
+import { useGetSingleUserMutation } from '../../store/apis/user';
 
 const styles = StyleSheet.create({
   container: {
@@ -107,35 +108,10 @@ const SignIn = ({ navigation }) => {
   const [isVisibile, setIsVisibile] = useState(false);
   const [userDataFromFireBase, setUserDataFromFireBase] = useState('');
 
-  //   const { setIsUserLoggedIn } = useContext(UserContext);
+  const [fetchSingleUser] = useGetSingleUserMutation();
 
-  const sendOtp = async () => {
-    console.log('hello');
-    // if (phoneNumber === "" || phoneNumber.length !== 10) {
-    //   // navigation.navigate("HomePage")
-    //   Alert.alert("Warning", "Please enter a Valid Phone Number", [
-    //     { text: "OK", onPress: () => setPhoneNumber("") },
-    //   ]);
-    // } else {
-    //   try {
-    //     setIsLoading(true);
-    //     const mobileNumber = "+91" + phoneNumber;
-    //     console.log("sending otp....");
-    //     const response = await auth().signInWithPhoneNumber(mobileNumber);
-    //     setUserDataFromFireBase(response);
-    //     setIsLoading(false);
-    //     Alert.alert("Message", `otp is successfully sent to ${phoneNumber} `, [
-    //       { text: "OK", onPress: () => setIsVisibile(true) },
-    //     ]);
-    //   } catch (error) {
-    //     console.log(error);
-    //     setIsLoading(false);
-
-    //     Alert.alert("Alert", `${error}`, [
-    //       { text: "OK", onPress: () => setPhoneNumber("") },
-    //     ]);
-    //   }
-    // }
+  const handleUserProfile = async () => {
+    const res = await fetchSingleUser;
   };
 
   const onSubmit = async (submittedData) => {
@@ -144,8 +120,9 @@ const SignIn = ({ navigation }) => {
       const mobileNumber = '+91' + submittedData.phoneNumber;
       console.log('sending otp....');
       const response = await auth().signInWithPhoneNumber(mobileNumber);
-      console.log({ response });
+      // console.log({ response });
       setUserDataFromFireBase(response);
+      dispatch(setCurrentUserInfo(submittedData.phoneNumber));
       setIsLoading(false);
       Alert.alert(
         'Message',
@@ -179,7 +156,7 @@ const SignIn = ({ navigation }) => {
               setPhoneNumber('');
               setOtp('');
               setIsLoading(false);
-              navigation.push('Home');
+              navigation.push('Drawer');
               setIsVisibile(false);
             },
           },
@@ -213,7 +190,6 @@ const SignIn = ({ navigation }) => {
   const validateUser = async () => {
     try {
       isPinSet = await AsyncStorage.getItem('mpin');
-      console.log({ isPinSet });
     } catch (error) {
       console.log('error', error);
     }

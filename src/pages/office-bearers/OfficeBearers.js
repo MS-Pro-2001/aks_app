@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { View, Text, StyleSheet, SafeAreaView, FlatList } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Searchbar, TouchableRipple } from 'react-native-paper';
 import { ActivityIndicator } from 'react-native-paper';
 import { useFetchOfficeBearersQuery } from '../../store/apis/officeBearers';

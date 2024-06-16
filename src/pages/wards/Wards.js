@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import { View, Text, StyleSheet, SafeAreaView, FlatList } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Searchbar,
   TouchableRipple,
@@ -10,6 +10,9 @@ import {
   Divider,
 } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useDispatch } from 'react-redux';
+import { setAllUsers } from '../../store/user';
+import { useFetchAllUsersQuery } from '../../store/apis/user';
 
 const wards = [
   'Bopal',
@@ -50,7 +53,15 @@ const WardItem = ({ item, onPress }) => {
 };
 
 const Wards = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const { data: allUsersData } = useFetchAllUsersQuery();
+
+  useEffect(() => {
+    dispatch(setAllUsers(allUsersData));
+  }, [allUsersData, dispatch]);
+
   const theme = useTheme();
+
   const styles = StyleSheet.create({
     searchInputBox: {
       margin: 7,
