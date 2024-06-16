@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "912224249182",
+    "project_id": "aks-reactnative",
+    "storage_bucket": "aks-reactnative.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912224249182:android:31060cbef8325a23b55bcf",
+        "android_client_info": {
+          "package_name": "com.aks_new"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkq4kt2h04Z40spKXGnEUq5lsFjHQ0izQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

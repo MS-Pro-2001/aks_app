@@ -10,6 +10,8 @@ import TabsNavigator from './src/navigators/TabsNavigator';
 import { useSelector } from 'react-redux';
 import { userSelector } from './src/store/user';
 import SignUp from './src/pages/signUp/SignUp';
+import SignIn from './src/pages/signIn/SignIn';
+import DrawerNavigator from './src/navigators/DrawerNavigator';
 // import { SafeAreaProvider } from 'react-native-safe-area-context';
 const Stack = createNativeStackNavigator();
 
@@ -22,7 +24,7 @@ function App() {
         {isUserLoggedIn ? (
           <Stack.Screen
             name="Home"
-            component={TabsNavigator}
+            component={DrawerNavigator}
             options={{
               headerShown: false,
             }}
@@ -30,7 +32,14 @@ function App() {
         ) : (
           <>
             <Stack.Screen
-              name="Home"
+              name="SignIn"
+              component={SignIn}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="SignUp"
               component={SignUp}
               options={{
                 headerShown: false,

@@ -157,7 +157,10 @@ const SignUp = ({ navigation }) => {
   return (
     <>
       <View style={styles.headingContainer}>
-        {/* <Image style={styles.logo} source={require('../images/aksLogo.png')} /> */}
+        <Image
+          style={styles.logo}
+          source={require('../../assets/images/aks_logo.png')}
+        />
 
         <Text style={styles.heading}>Register</Text>
       </View>
@@ -267,7 +270,7 @@ const SignUp = ({ navigation }) => {
               setOpenDatePicker={setOpenDatePicker}
               readonly={true}
             />
-            <Text style={{ color: '#005b96', fontSize: 10 }}>DD-MM-YYYY</Text>
+            {/* <Text style={{ color: '#005b96', fontSize: 10 }}>DD-MM-YYYY</Text> */}
 
             <Button
               loading={isLoading}
@@ -281,7 +284,7 @@ const SignUp = ({ navigation }) => {
             <View style={{ alignItems: 'flex-end' }}>
               <Text
                 style={{ margin: 10, color: '#005b96' }}
-                onPress={() => navigation.push('Login')}
+                onPress={() => navigation.push('SignIn')}
               >
                 Already a user? Login
               </Text>
