@@ -139,6 +139,14 @@ const UserProfile = ({ navigation }) => {
       };
     }, [])
   );
+
+  const { allUsers, currentUserInfo } = useSelector(userSelector);
+
+  // console.log({ cUser: user.currentUserInfo });
+
+  const currentUserData = allUsers?.find(
+    (user) => user?.phone_no === currentUserInfo?.phoneNumber
+  );
   const {
     control,
     handleSubmit,
@@ -159,14 +167,6 @@ const UserProfile = ({ navigation }) => {
 
   const [fetchSingleUser, { data, isLoading }] = useGetSingleUserMutation();
   const [updateUser] = useUpdateUserMutation();
-
-  const { allUsers, currentUserInfo } = useSelector(userSelector);
-
-  // console.log({ cUser: user.currentUserInfo });
-
-  const currentUserData = allUsers?.find(
-    (user) => user?.phone_no === currentUserInfo?.phoneNumber
-  );
 
   const onSubmit = async (formData) => {
     const body = { ...formData, user_id: currentUserData?._id };
