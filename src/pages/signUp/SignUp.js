@@ -17,6 +17,8 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { SelectList } from 'react-native-dropdown-select-list';
 import { useRegisterUserMutation } from '../../store/apis/user';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../../store/user';
 
 const styles = StyleSheet.create({
   box: {
@@ -27,13 +29,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   heading: {
-    marginTop: 5,
+    marginTop: 2,
     marginBottom: 5,
     color: '#213190',
-    fontSize: 25,
+    fontSize: 15,
   },
   container: {
-    margin: 10,
+    marginLeft: 10,
+    marginRight: 10,
+
     padding: 5,
   },
   subHeading: {
@@ -47,7 +51,7 @@ const styles = StyleSheet.create({
     width: 60,
     borderRadius: 50,
     height: 60,
-    marginTop: 20,
+    marginTop: 15,
     objectFit: 'cover',
   },
 });
@@ -81,7 +85,7 @@ export const CustomInput = ({
             onChangeText={onChange}
             value={value}
             // right={<TextInput.Icon icon="eye" />}
-            style={{ marginTop: 5 }}
+            style={{ marginTop: 3 }}
             // theme={{ colors: { primary: '#213190' } }}
             //   label={label}
             error={!!errors[name] && Object.keys(errors[name])?.length !== 0}
@@ -101,6 +105,7 @@ export const CustomInput = ({
 };
 
 const SignUp = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
 
   const [isLoading, setIsLoading] = useState(false);
@@ -118,6 +123,7 @@ const SignUp = ({ navigation }) => {
     defaultValues: {
       firstName: '',
       lastName: '',
+      password: '',
       address: '',
       phone_no: '',
       ward: '',
@@ -130,10 +136,28 @@ const SignUp = ({ navigation }) => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     const payload = { ...data, ward: selected };
-    console.log('asaaaa', payload);
 
     const res = await registerUser(payload);
-    console.log({ res });
+    if (res?.data) {
+      setIsLoading(false);
+      Alert.alert('Message', 'User Registered Successfully', [
+        {
+          text: 'OK',
+          onPress: () => {
+            dispatch(loginUser());
+            navigation.push('Drawer');
+          },
+        },
+      ]);
+    } else {
+      setIsLoading(false);
+      reset();
+      Alert.alert('Warning', res?.error?.data?.msg, [
+        {
+          text: 'OK',
+        },
+      ]);
+    }
   };
 
   const data = [
@@ -187,6 +211,16 @@ const SignUp = ({ navigation }) => {
               }}
               placeholder={'Last Name'}
               // label={"Last Name"}
+              errors={errors}
+            />
+            <CustomInput
+              control={control}
+              name="password"
+              validationRules={{
+                required: { value: true, message: 'Password is required' },
+              }}
+              placeholder={'Password'}
+              // label={"Address"}
               errors={errors}
             />
 
@@ -284,7 +318,7 @@ const SignUp = ({ navigation }) => {
             <View style={{ alignItems: 'flex-end' }}>
               <Text
                 style={{ margin: 10, color: '#005b96' }}
-                onPress={() => navigation.push('SignIn')}
+                onPress={() => navigation.push('Login')}
               >
                 Already a user? Login
               </Text>

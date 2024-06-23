@@ -46,7 +46,7 @@ const WardItem = ({ item, onPress }) => {
             />
           )}
         />
-        {item !== 'Odhav' && <Divider />}
+        <Divider />
       </>
     </TouchableRipple>
   );
@@ -63,6 +63,9 @@ const Wards = ({ navigation }) => {
   const theme = useTheme();
 
   const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
     searchInputBox: {
       margin: 7,
     },
@@ -93,7 +96,7 @@ const Wards = ({ navigation }) => {
   );
 
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchInputBox}>
         <Searchbar
           style={{ borderRadius: 10 }}
@@ -109,23 +112,19 @@ const Wards = ({ navigation }) => {
         </Text>
         <Text style={styles.border} />
       </View>
-      <View>
-        <SafeAreaView>
-          <FlatList
-            data={filteredWards}
-            renderItem={({ item }) => (
-              <WardItem
-                item={item}
-                onPress={() =>
-                  navigation.push('WardTabsNavigator', { userWard: item })
-                }
-              />
-            )}
-            keyExtractor={(item) => item}
+      <FlatList
+        data={filteredWards}
+        renderItem={({ item }) => (
+          <WardItem
+            item={item}
+            onPress={() =>
+              navigation.push('WardTabsNavigator', { userWard: item })
+            }
           />
-        </SafeAreaView>
-      </View>
-    </View>
+        )}
+        keyExtractor={(item) => item}
+      />
+    </SafeAreaView>
   );
 };
 

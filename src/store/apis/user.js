@@ -8,9 +8,20 @@ const extendedApi = createApiInstance.injectEndpoints({
         return res;
       },
     }),
+    loginUser: build.mutation({
+      query(body) {
+        return {
+          url: 'api/auth/login',
+          method: 'POST',
+          body: body,
+        };
+      },
+      transformResponse: (res) => {
+        return res;
+      },
+    }),
     registerUser: build.mutation({
       query(body) {
-        console.log({ body });
         return {
           url: 'api/auth/register',
           method: 'POST',
@@ -37,10 +48,9 @@ const extendedApi = createApiInstance.injectEndpoints({
     }),
     updateUser: build.mutation({
       query(body) {
-        console.log({ body });
         return {
           url: 'api/user/UpdateUser',
-          method: 'POST',
+          method: 'PUT',
           body: body,
         };
       },
@@ -56,6 +66,7 @@ const extendedApi = createApiInstance.injectEndpoints({
 
 export const {
   useRegisterUserMutation,
+  useLoginUserMutation,
   useGetSingleUserMutation,
   useUpdateUserMutation,
   useFetchAllUsersQuery,

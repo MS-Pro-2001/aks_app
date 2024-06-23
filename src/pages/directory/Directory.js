@@ -1,18 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  FlatList,
-  Image,
-} from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { Searchbar, TouchableRipple } from 'react-native-paper';
-import { ActivityIndicator, MD2Colors } from 'react-native-paper';
+import { View, Text, StyleSheet, SafeAreaView, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { Avatar, Searchbar, TouchableRipple } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../store/user';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   searchInputBox: {
@@ -59,12 +53,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const Directory = ({ route, navigation }) => {
+const Directory = ({ route }) => {
   const ward_name = route?.params?.userWard;
-
+  const navigate = useNavigation();
   const [searchedQuery, setSearchedQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState([]);
+  const [loading] = useState(false);
+
   const { allUsers } = useSelector(userSelector);
 
   const directoryFilteredData = allUsers?.filter((item) => {
@@ -113,7 +107,7 @@ const Directory = ({ route, navigation }) => {
                 return (
                   <TouchableRipple
                     onPress={() =>
-                      navigation.push('MembersDetailPage', {
+                      navigate.navigate('MembersDetail', {
                         user_id: item?._id,
                       })
                     }
@@ -122,9 +116,25 @@ const Directory = ({ route, navigation }) => {
                   >
                     <View>
                       <View style={styles.listItem}>
-                        <Text style={styles.photo}>
-                          <Image source={item.familyPhoto} />
-                        </Text>
+                        <View
+                          style={{
+                            marginRight: 10,
+
+                            marginTop: 12,
+                          }}
+                        >
+                          {item?.familyPhoto ? (
+                            <Avatar.Image
+                              size={48}
+                              source={require('../../assets/images/No_Image_Available.jpg')}
+                            />
+                          ) : (
+                            <Avatar.Text
+                              label={item?.firstName[0]?.toUpperCase()}
+                              size={48}
+                            />
+                          )}
+                        </View>
                         <View
                           style={{
                             flex: 1,

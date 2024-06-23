@@ -142,8 +142,6 @@ const UserProfile = ({ navigation }) => {
 
   const { allUsers, currentUserInfo } = useSelector(userSelector);
 
-  // console.log({ cUser: user.currentUserInfo });
-
   const currentUserData = allUsers?.find(
     (user) => user?.phone_no === currentUserInfo?.phoneNumber
   );
@@ -165,13 +163,13 @@ const UserProfile = ({ navigation }) => {
     },
   });
 
-  const [fetchSingleUser, { data, isLoading }] = useGetSingleUserMutation();
+  // const [fetchSingleUser, { data, isLoading }] = useGetSingleUserMutation();
   const [updateUser] = useUpdateUserMutation();
 
   const onSubmit = async (formData) => {
     const body = { ...formData, user_id: currentUserData?._id };
     const res = await updateUser(body);
-    console.log({ res: res?.data?.user });
+    console.log({ res: res });
     const updatedData = res?.data?.user;
     if (res?.data?.user) {
       setValue('firstName', updatedData?.firstName || ''); // Set firstName default value
@@ -183,7 +181,7 @@ const UserProfile = ({ navigation }) => {
       Alert.alert('Message', 'Profile Updated SuccessFully', [{ text: 'OK' }]);
       setUpdateProfileStatus(false);
     } else {
-      Alert.alert('Message', 'Failed to update Profile', [{ text: 'OK' }]);
+      Alert.alert('Message', res?.error?.data?.msg, [{ text: 'OK' }]);
     }
   };
 
@@ -280,8 +278,8 @@ const UserProfile = ({ navigation }) => {
                   message: 'Date of birth is required',
                 },
                 pattern: {
-                  value: /^\d{4}-\d{2}-\d{2}$/,
-                  message: 'Date of birth should of format YYY-MM-DD',
+                  value: /^\d{2}-\d{2}-\d{4}$/,
+                  message: 'Date of birth should of format DD-MM-YYYY',
                 },
               }}
               placeholder={'Date of birth'}

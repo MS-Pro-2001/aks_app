@@ -21,6 +21,7 @@ export const userSlice = createSlice({
       state.MPin = { ...state.MPin, code: payload };
     },
     setCurrentUserInfo: (state, payload) => {
+      console.log(payload);
       state.currentUserInfo = {
         ...state.currentUserInfo,
         phoneNumber: payload.payload,

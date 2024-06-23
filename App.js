@@ -9,9 +9,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import { userSelector } from './src/store/user';
 import SignUp from './src/pages/signUp/SignUp';
-import SignIn from './src/pages/signIn/SignIn';
+// import SignIn from './src/pages/signIn/SignIn';
 import DrawerNavigator from './src/navigators/DrawerNavigator';
 import { WardTabsNavigator } from './src/navigators/WardsTabNavigator';
+import Login from './src/pages/login/Login';
+import MembersDetail from './src/pages/memberDetail/MembersDetail';
 // import { SafeAreaProvider } from 'react-native-safe-area-context';
 const Stack = createNativeStackNavigator();
 
@@ -38,12 +40,20 @@ function App() {
                 headerTitle: 'Wards',
               }}
             />
+            <Stack.Screen
+              name="Members Detail"
+              component={MembersDetail}
+              options={{
+                headerShown: true,
+                headerTitle: 'MembersDetail',
+              }}
+            />
           </>
         ) : (
           <>
             <Stack.Screen
-              name="SignIn"
-              component={SignIn}
+              name="Login"
+              component={Login}
               options={{
                 headerShown: false,
               }}
