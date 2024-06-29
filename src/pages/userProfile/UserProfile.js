@@ -32,6 +32,7 @@ import {
 } from '../../store/apis/user';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../store/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   box: {
@@ -145,6 +146,7 @@ const UserProfile = ({ navigation }) => {
   const currentUserData = allUsers?.find(
     (user) => user?.phone_no === currentUserInfo?.phoneNumber
   );
+  console.log({ currentUserData });
   const {
     control,
     handleSubmit,

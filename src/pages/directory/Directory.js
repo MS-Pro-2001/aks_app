@@ -53,9 +53,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const Directory = ({ route }) => {
+const Directory = ({ route, navigation }) => {
   const ward_name = route?.params?.userWard;
-  const navigate = useNavigation();
+  // const navigate = useNavigation();
   const [searchedQuery, setSearchedQuery] = useState('');
   const [loading] = useState(false);
 
@@ -107,7 +107,7 @@ const Directory = ({ route }) => {
                 return (
                   <TouchableRipple
                     onPress={() =>
-                      navigate.navigate('MembersDetail', {
+                      navigation.navigate('MembersDetail', {
                         user_id: item?._id,
                       })
                     }

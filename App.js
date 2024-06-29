@@ -14,6 +14,7 @@ import DrawerNavigator from './src/navigators/DrawerNavigator';
 import { WardTabsNavigator } from './src/navigators/WardsTabNavigator';
 import Login from './src/pages/login/Login';
 import MembersDetail from './src/pages/memberDetail/MembersDetail';
+import LoginUsingMPin from './src/pages/mPin/LoginUsingPin';
 // import { SafeAreaProvider } from 'react-native-safe-area-context';
 const Stack = createNativeStackNavigator();
 
@@ -41,16 +42,23 @@ function App() {
               }}
             />
             <Stack.Screen
-              name="Members Detail"
+              name="MembersDetail"
               component={MembersDetail}
               options={{
                 headerShown: true,
-                headerTitle: 'MembersDetail',
+                headerTitle: 'Members Detail',
               }}
             />
           </>
         ) : (
           <>
+            <Stack.Screen
+              name="LoginUsingMPin"
+              component={LoginUsingMPin}
+              options={{
+                headerShown: false,
+              }}
+            />
             <Stack.Screen
               name="Login"
               component={Login}

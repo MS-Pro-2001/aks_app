@@ -17,8 +17,8 @@ export const userSlice = createSlice({
     logOutUser: (state) => {
       state.isUserLoggedIn = false;
     },
-    MPin: (state, payload) => {
-      state.MPin = { ...state.MPin, code: payload };
+    setMPin: (state, payload) => {
+      state.MPin = payload;
     },
     setCurrentUserInfo: (state, payload) => {
       console.log(payload);
@@ -33,8 +33,13 @@ export const userSlice = createSlice({
   },
 });
 
-export const { loginUser, logOutUser, setAllUsers, setCurrentUserInfo } =
-  userSlice.actions;
+export const {
+  loginUser,
+  logOutUser,
+  setAllUsers,
+  setCurrentUserInfo,
+  setMPin,
+} = userSlice.actions;
 export const userSelector = (state) => {
   return state.user;
 };

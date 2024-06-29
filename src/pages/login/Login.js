@@ -16,6 +16,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useLoginUserMutation } from '../../store/apis/user';
 import { useDispatch } from 'react-redux';
 import { loginUser, setCurrentUserInfo } from '../../store/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   box: {
@@ -126,6 +127,8 @@ const Login = ({ navigation }) => {
     console.log(res?.error);
 
     if (res?.data) {
+      await AsyncStorage.setItem('phone_no', data?.phone_no);
+
       reset();
       setIsLoading(false);
       dispatch(setCurrentUserInfo(data.phone_no));
@@ -209,14 +212,29 @@ const Login = ({ navigation }) => {
             >
               Login{' '}
             </Button>
-            <View style={{ alignItems: 'flex-end' }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 5,
+              }}
+            >
               <Text
-                style={{ margin: 10, color: '#005b96' }}
+                style={{ color: '#005b96' }}
+                onPress={() => navigation.push('LoginUsingMPin')}
+              >
+                Login Using Pin?
+              </Text>
+              <Text
+                style={{ color: '#005b96' }}
                 onPress={() => navigation.push('SignUp')}
               >
                 New user? Register
               </Text>
             </View>
+            {/* <View style={{ alignItems: 'flex-end' }}>
+
+            </View> */}
           </View>
         </SafeAreaView>
       </ScrollView>

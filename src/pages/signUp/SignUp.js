@@ -18,7 +18,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { useRegisterUserMutation } from '../../store/apis/user';
 import { useDispatch } from 'react-redux';
-import { loginUser } from '../../store/user';
+import { loginUser, setCurrentUserInfo } from '../../store/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   box: {
@@ -143,8 +144,10 @@ const SignUp = ({ navigation }) => {
       Alert.alert('Message', 'User Registered Successfully', [
         {
           text: 'OK',
-          onPress: () => {
+          onPress: async () => {
             dispatch(loginUser());
+            dispatch(setCurrentUserInfo(data?.phone_no));
+            await AsyncStorage.setItem('phone_no', data?.phone_no);
             navigation.push('Drawer');
           },
         },
