@@ -105,6 +105,19 @@ const Login = ({ navigation }) => {
   const dispatch = useDispatch();
   const { isUserLoggedIn } = useSelector(userSelector);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPinSet, setIsPinSet] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const pin = await AsyncStorage.getItem('mpin');
+      console.log({ pin });
+
+      if (pin) {
+        setIsPinSet(true);
+      }
+    };
+    fetchData();
+  }, [isUserLoggedIn]);
 
   useEffect(() => {
     if (isUserLoggedIn) {
@@ -224,12 +237,14 @@ const Login = ({ navigation }) => {
                 marginTop: 5,
               }}
             >
-              <Text
-                style={{ color: '#005b96' }}
-                onPress={() => navigation.push('LoginUsingMPin')}
-              >
-                Login Using Pin?
-              </Text>
+              {isPinSet && (
+                <Text
+                  style={{ color: '#005b96' }}
+                  onPress={() => navigation.push('LoginUsingMPin')}
+                >
+                  Login Using Pin?
+                </Text>
+              )}
               <Text
                 style={{ color: '#005b96' }}
                 onPress={() => navigation.push('SignUp')}

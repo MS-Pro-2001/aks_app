@@ -81,13 +81,11 @@ const Directory = ({ route, navigation }) => {
         <View>
           <Text style={styles.entriesCount}>
             Total members:{' '}
-            {
-              directoryFilteredData?.filter((item) =>
-                item?.firstName
-                  ?.toLowerCase()
-                  .includes(searchedQuery.toLowerCase())
-              ).length
-            }
+            {directoryFilteredData?.filter((item) =>
+              item?.firstName
+                ?.toLowerCase()
+                .includes(searchedQuery.toLowerCase())
+            ).length || 0}
           </Text>
           <Text style={styles.border} />
         </View>

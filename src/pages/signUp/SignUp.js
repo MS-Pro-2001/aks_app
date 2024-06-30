@@ -21,7 +21,7 @@ import {
   useRegisterUserMutation,
 } from '../../store/apis/user';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentUserInfo, userSelector } from '../../store/user';
+import { loginUser, setCurrentUserInfo, userSelector } from '../../store/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
@@ -158,9 +158,10 @@ const SignUp = ({ navigation }) => {
         {
           text: 'OK',
           onPress: async () => {
-            // dispatch(loginUser());
-            // dispatch(setCurrentUserInfo());
-            // navigation.push('Drawer');
+            reset();
+            dispatch(loginUser());
+            dispatch(setCurrentUserInfo());
+            navigation.push('Drawer');
           },
         },
       ]);

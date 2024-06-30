@@ -38,7 +38,7 @@ function DrawerNavigator({ navigation }) {
       }
     };
     fetchData();
-  }, [isUserLoggedIn, navigation]);
+  }, [isUserLoggedIn]);
 
   return (
     <Drawer.Navigator>

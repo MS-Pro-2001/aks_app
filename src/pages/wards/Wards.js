@@ -121,7 +121,7 @@ const Wards = ({ navigation }) => {
       <View style={styles.entriesCount}>
         <Text style={{ color: theme.colors.primary, marginLeft: 5 }}>
           {searchedQuery?.length ? 'Search records' : 'Total wards'}:{' '}
-          {filteredWards.length}
+          {filteredWards.length || 0}
         </Text>
         <Text style={styles.border} />
       </View>
