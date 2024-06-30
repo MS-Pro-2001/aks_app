@@ -82,10 +82,15 @@ const LoginUsingMPin = ({ navigation }) => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {};
+    const fetchData = async () => {
+      const pin = await AsyncStorage.getItem('mpin');
 
+      if (!pin) {
+        navigate.navigate('Login');
+      }
+    };
     fetchData();
-  }, []);
+  }, [isUserLoggedIn, navigate]);
 
   useEffect(() => {
     if (isUserLoggedIn) {

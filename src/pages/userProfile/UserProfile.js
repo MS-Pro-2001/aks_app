@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CustomInput = ({
+const CustomInput = ({
   control = {},
   name = '',
   validationRules = {},
@@ -65,6 +65,8 @@ export const CustomInput = ({
   setOpenDatePicker,
   readonly = 'false',
   updateProfileStatus,
+  inputTextIcon,
+  ...props
 }) => {
   return (
     <>
@@ -86,14 +88,8 @@ export const CustomInput = ({
               theme={{ colors: { primary: '#213190' } }}
               //   label={label}
               error={!!errors[name] && Object.keys(errors[name])?.length !== 0}
-              right={
-                name === 'dob' && (
-                  <TextInput.Icon
-                    name="calendar-range"
-                    onPress={() => setOpenDatePicker(true)}
-                  />
-                )
-              }
+              right={inputTextIcon}
+              {...props}
             />
           );
         }}
@@ -110,8 +106,6 @@ export const CustomInput = ({
 };
 
 const UserProfile = ({ navigation }) => {
-  const [date, setDate] = useState(new Date());
-
   const [openDatePicker, setOpenDatePicker] = useState(false);
 
   const [updateProfileStatus, setUpdateProfileStatus] = useState(false);
@@ -263,11 +257,19 @@ const UserProfile = ({ navigation }) => {
                   message: 'Date of birth should of format DD-MM-YYYY',
                 },
               }}
+              inputTextIcon={
+                <TextInput.Icon
+                  icon="calendar-range"
+                  disabled={!updateProfileStatus}
+                  onPress={() => setOpenDatePicker(true)}
+                />
+              }
               placeholder={'Date of birth'}
               // label={"Date of birth"}
               errors={errors}
               setOpenDatePicker={setOpenDatePicker}
               readonly={true}
+              editable={false}
             />
 
             {updateProfileStatus ? (
@@ -298,18 +300,22 @@ const UserProfile = ({ navigation }) => {
             mode="date"
             modal
             open={openDatePicker}
-            date={date}
-            onConfirm={() => {
-              setOpenDatePicker(false);
-              setDate(date);
-              // const formattedDate = date.getDate()+"-"+date.getMonth()+"-"+date.getFullYear()
-              const extractedDate = date.toISOString().split('T')[0].split('-');
-              const customDate = extractedDate[0];
-              '-' +
+            placeholder="DD-MM-YYYY"
+            date={new Date()}
+            onConfirm={(inputDate) => {
+              const extractedDate = inputDate
+                .toISOString()
+                .split('T')[0]
+                .split('-');
+              const customDate =
+                extractedDate[2] +
+                '-' +
                 extractedDate[1] +
                 '-' +
-                extractedDate[2] +
-                setValue('dob', customDate);
+                extractedDate[0];
+
+              setOpenDatePicker(false);
+              setValue('dob', customDate);
               clearErrors('dob');
             }}
             onCancel={() => {

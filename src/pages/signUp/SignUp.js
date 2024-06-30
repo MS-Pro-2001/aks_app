@@ -72,6 +72,7 @@ export const CustomInput = ({
   setOpenDatePicker,
   readonly = 'false',
   inputTextIcon,
+  ...props
 }) => {
   return (
     <>
@@ -94,6 +95,7 @@ export const CustomInput = ({
             //   label={label}
             error={!!errors[name] && Object.keys(errors[name])?.length !== 0}
             right={inputTextIcon}
+            {...props}
           />
         )}
         name={name}
@@ -311,10 +313,14 @@ const SignUp = ({ navigation }) => {
               inputTextIcon={
                 <TextInput.Icon
                   icon="calendar-range"
-                  onPress={() => setOpenDatePicker(true)}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setOpenDatePicker(true);
+                  }}
                 />
               }
-              placeholder={'Date of birth'}
+              editable={false}
+              placeholder={'Date of birth | DD-MM-YYYY'}
               errors={errors}
               setOpenDatePicker={setOpenDatePicker}
               readonly={true}
