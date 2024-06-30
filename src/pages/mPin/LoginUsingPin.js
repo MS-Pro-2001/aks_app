@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Image, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,7 +12,7 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { loginUser, userSelector } from '../../store/user';
+import { loginUser, setCurrentUserInfo, userSelector } from '../../store/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
@@ -68,11 +68,11 @@ const styles = StyleSheet.create({
 });
 
 const LoginUsingMPin = ({ navigation }) => {
+  const { isUserLoggedIn } = useSelector(userSelector);
+
   const navigate = useNavigation();
   const dispatch = useDispatch();
-  const { MPin } = useSelector(userSelector);
-
-  console.log(MPin);
+  // const { MPin } = useSelector(userSelector);
 
   const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({ value, cellCount: 4 });
@@ -81,16 +81,31 @@ const LoginUsingMPin = ({ navigation }) => {
     setValue,
   });
 
+  useEffect(() => {
+    const fetchData = async () => {};
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      navigation.navigate('Home');
+    }
+  }, [isUserLoggedIn, navigation]);
+
   const handleInputPin = async (val) => {
-    const pin = await AsyncStorage.getItem('mpin');
-    console.log({ pin });
     setValue(val);
+    const pin = await AsyncStorage.getItem('mpin');
+    const data = await AsyncStorage.getItem('userData');
+    const currentUserInfo = JSON.parse(data);
+    dispatch(setCurrentUserInfo(currentUserInfo));
+
     try {
       if (val.length === 4) {
         if (val === pin) {
           dispatch(loginUser());
 
-          navigate.navigate('Drawer');
+          navigate.navigate('Home');
         } else {
           Alert.alert('Error', 'Invalid Pin?', [
             {

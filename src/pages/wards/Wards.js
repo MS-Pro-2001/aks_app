@@ -13,6 +13,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useDispatch } from 'react-redux';
 import { setAllUsers } from '../../store/user';
 import { useFetchAllUsersQuery } from '../../store/apis/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const wards = [
   'Bopal',
@@ -53,8 +55,19 @@ const WardItem = ({ item, onPress }) => {
 };
 
 const Wards = ({ navigation }) => {
+  const navigate = useNavigation();
   const dispatch = useDispatch();
   const { data: allUsersData } = useFetchAllUsersQuery();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const pin = await AsyncStorage.getItem('mpin');
+      const currentUserInfo = await AsyncStorage.getItem('userData');
+      console.log('wards', { pin, currentUserInfo });
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     dispatch(setAllUsers(allUsersData));
@@ -118,7 +131,7 @@ const Wards = ({ navigation }) => {
           <WardItem
             item={item}
             onPress={() =>
-              navigation.push('WardTabsNavigator', { userWard: item })
+              navigate.navigate('WardTabsNavigator', { userWard: item })
             }
           />
         )}

@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
 });
 
 const Directory = ({ route, navigation }) => {
-  const ward_name = route?.params?.userWard;
+  const { userWard: ward_name } = route.params;
+
   // const navigate = useNavigation();
   const [searchedQuery, setSearchedQuery] = useState('');
   const [loading] = useState(false);

@@ -1,38 +1,22 @@
 /* eslint-disable react-native/no-inline-styles */
 import {
   View,
-  Text,
   StyleSheet,
-  Image,
   SafeAreaView,
   ScrollView,
   Alert,
 } from 'react-native';
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from 'react';
-import {
-  Button,
-  HelperText,
-  TextInput,
-  TextInputMask,
-} from 'react-native-paper';
+import React, { useState } from 'react';
+import { Button, HelperText, TextInput } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 // import PhoneInput from 'react-native-phone-number-input';
 // import CustomPhoneInput from '../components/CustomPhoneInput';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator } from 'react-native-paper';
+
 import { useFocusEffect } from '@react-navigation/native';
-import {
-  useGetSingleUserMutation,
-  useUpdateUserMutation,
-} from '../../store/apis/user';
+import { useUpdateUserMutation } from '../../store/apis/user';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../store/user';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   box: {
@@ -141,27 +125,22 @@ const UserProfile = ({ navigation }) => {
     }, [])
   );
 
-  const { allUsers, currentUserInfo } = useSelector(userSelector);
+  const { currentUserInfo } = useSelector(userSelector);
 
-  const currentUserData = allUsers?.find(
-    (user) => user?.phone_no === currentUserInfo?.phoneNumber
-  );
-  console.log({ currentUserData });
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
-    reset,
     clearErrors,
   } = useForm({
     defaultValues: {
-      firstName: currentUserData?.firstName,
-      lastName: currentUserData?.lastName,
-      address: currentUserData?.address,
-      phone_no: currentUserData?.phone_no,
-      ward: currentUserData?.ward,
-      dob: currentUserData?.dob,
+      firstName: currentUserInfo?.firstName,
+      lastName: currentUserInfo?.lastName,
+      address: currentUserInfo?.address,
+      phone_no: currentUserInfo?.phone_no,
+      ward: currentUserInfo?.ward,
+      dob: currentUserInfo?.dob,
     },
   });
 
@@ -169,7 +148,7 @@ const UserProfile = ({ navigation }) => {
   const [updateUser] = useUpdateUserMutation();
 
   const onSubmit = async (formData) => {
-    const body = { ...formData, user_id: currentUserData?._id };
+    const body = { ...formData, user_id: currentUserInfo?._id };
     const res = await updateUser(body);
     console.log({ res: res });
     const updatedData = res?.data?.user;
@@ -320,7 +299,7 @@ const UserProfile = ({ navigation }) => {
             modal
             open={openDatePicker}
             date={date}
-            onConfirm={(date) => {
+            onConfirm={() => {
               setOpenDatePicker(false);
               setDate(date);
               // const formattedDate = date.getDate()+"-"+date.getMonth()+"-"+date.getFullYear()

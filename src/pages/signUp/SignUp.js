@@ -8,7 +8,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
@@ -16,9 +16,12 @@ import DatePicker from 'react-native-date-picker';
 import { Controller, useForm } from 'react-hook-form';
 
 import { SelectList } from 'react-native-dropdown-select-list';
-import { useRegisterUserMutation } from '../../store/apis/user';
-import { useDispatch } from 'react-redux';
-import { loginUser, setCurrentUserInfo } from '../../store/user';
+import {
+  useGetSingleUserMutation,
+  useRegisterUserMutation,
+} from '../../store/apis/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCurrentUserInfo, userSelector } from '../../store/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
@@ -106,10 +109,16 @@ export const CustomInput = ({
 };
 
 const SignUp = ({ navigation }) => {
+  const { isUserLoggedIn } = useSelector(userSelector);
+
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
 
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      navigation.navigate('Drawer');
+    }
+  }, [isUserLoggedIn, navigation]);
 
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [selected, setSelected] = React.useState('');
@@ -131,29 +140,31 @@ const SignUp = ({ navigation }) => {
     },
   });
 
-  const [registerUser, { isLoading: isRegisterUserLoading }] =
-    useRegisterUserMutation();
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
+
+  const [getSingleUser] = useGetSingleUserMutation();
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
     const payload = { ...data, ward: selected };
 
     const res = await registerUser(payload);
     if (res?.data) {
-      setIsLoading(false);
+      const singleUserData = await getSingleUser({ user_id: res?.data?._id });
+      if (singleUserData.data) {
+        dispatch(setCurrentUserInfo(res?.data));
+        await AsyncStorage.setItem('user_data', res?.data);
+      }
       Alert.alert('Message', 'User Registered Successfully', [
         {
           text: 'OK',
           onPress: async () => {
-            dispatch(loginUser());
-            dispatch(setCurrentUserInfo(data?.phone_no));
-            await AsyncStorage.setItem('phone_no', data?.phone_no);
-            navigation.push('Drawer');
+            // dispatch(loginUser());
+            // dispatch(setCurrentUserInfo());
+            // navigation.push('Drawer');
           },
         },
       ]);
     } else {
-      setIsLoading(false);
       reset();
       Alert.alert('Warning', res?.error?.data?.msg, [
         {

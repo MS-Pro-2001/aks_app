@@ -67,13 +67,9 @@ const OfficeBearers = () => {
       <View style={styles.entriesCount}>
         <Text style={{ color: '#005b96', marginLeft: 5 }}>
           Total entries:{' '}
-          {
-            data?.filter((item) =>
-              item?.firstName
-                .toLowerCase()
-                .includes(searchedQuery.toLowerCase())
-            )?.length
-          }
+          {data?.filter((item) =>
+            item?.firstName.toLowerCase().includes(searchedQuery.toLowerCase())
+          )?.length || 0}
         </Text>
         <Text style={styles.border} />
       </View>

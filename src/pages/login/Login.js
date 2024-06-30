@@ -8,14 +8,14 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button, HelperText, TextInput } from 'react-native-paper';
 
 import { Controller, useForm } from 'react-hook-form';
 import { useLoginUserMutation } from '../../store/apis/user';
-import { useDispatch } from 'react-redux';
-import { loginUser, setCurrentUserInfo } from '../../store/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser, setCurrentUserInfo, userSelector } from '../../store/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
@@ -103,9 +103,15 @@ export const CustomInput = ({
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
+  const { isUserLoggedIn } = useSelector(userSelector);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [selected, setSelected] = React.useState('');
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      navigation.navigate('Drawer');
+    }
+  }, [isUserLoggedIn, navigation]);
+
   const {
     control,
     handleSubmit,
@@ -124,20 +130,19 @@ const Login = ({ navigation }) => {
     setIsLoading(true);
 
     const res = await signInUser(data);
-    console.log(res?.error);
 
     if (res?.data) {
-      await AsyncStorage.setItem('phone_no', data?.phone_no);
-
+      console.log('loginnn2', res?.data);
+      await AsyncStorage.setItem('userData', JSON.stringify(res?.data?.user));
+      dispatch(setCurrentUserInfo(res?.data?.user));
       reset();
       setIsLoading(false);
-      dispatch(setCurrentUserInfo(data.phone_no));
       Alert.alert('Message', 'Logged In successfully', [
         {
           text: 'OK',
           onPress: () => {
             dispatch(loginUser());
-            navigation.navigate('Drawer');
+            navigation.navigate('Home');
           },
         },
       ]);

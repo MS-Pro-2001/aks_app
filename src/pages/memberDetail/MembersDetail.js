@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Card, Title, useTheme } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../store/user';
 
-const MembersDetail = ({ route }) => {
-  const { allUsers } = useSelector(userSelector);
+const MembersDetail = ({ navigation, route }) => {
+  const { allUsers, isUserLoggedIn } = useSelector(userSelector);
+
+  const reduxData = useSelector(userSelector);
+
   const theme = useTheme();
   const user = allUsers.find((item) => item?._id === route?.params?.user_id);
+
+  console.log({ memberDe: reduxData });
+  useEffect(() => {
+    if (!isUserLoggedIn) {
+      navigation.navigate('Login');
+    }
+  }, [isUserLoggedIn, navigation]);
 
   const styles = StyleSheet.create({
     container: {

@@ -23,8 +23,7 @@ export const userSlice = createSlice({
     setCurrentUserInfo: (state, payload) => {
       console.log(payload);
       state.currentUserInfo = {
-        ...state.currentUserInfo,
-        phoneNumber: payload.payload,
+        ...payload.payload,
       };
     },
     setAllUsers: (state, payload) => {

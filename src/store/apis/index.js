@@ -11,7 +11,7 @@ export const createOfficeBearersInstance = createApi({
 export const createApiInstance = createApi({
   reducerPath: 'api', // Unique key for the API reducer
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://aks-backend.onrender.com',
+    baseUrl: 'https://aksbackend-production.up.railway.app',
   }),
   endpoints: (build) => ({}), // No initial endpoints
 });
