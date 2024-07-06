@@ -21,7 +21,7 @@ export const userSlice = createSlice({
       state.MPin = payload;
     },
     setCurrentUserInfo: (state, payload) => {
-      console.log(payload);
+      // console.log(payload);
       state.currentUserInfo = {
         ...payload.payload,
       };

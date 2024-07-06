@@ -55,7 +55,6 @@ const OfficeBearers = () => {
   const [searchedQuery, setSearchedQuery] = useState('');
 
   const { data, isLoading } = useFetchOfficeBearersQuery();
-  console.log({ data, l: data?.length });
 
   return (
     <SafeAreaView style={styles.container}>

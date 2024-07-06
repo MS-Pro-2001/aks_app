@@ -22,12 +22,12 @@ import { userSelector } from '../../store/user';
 import DatePicker from 'react-native-date-picker';
 
 // Family member card component
-const FamilyMemberCard = ({ member }) => (
+export const FamilyMemberCard = ({ member }) => (
   <View style={styles.card}>
-    <Text style={styles.name}>{member.name_of_member}</Text>
-    <Text style={styles.info}>Date of Birth: {member.dob}</Text>
+    <Text style={styles.name}>{member?.name_of_member}</Text>
+    <Text style={styles.info}>Date of Birth: {member?.dob}</Text>
     <Text style={styles.info}>
-      Relationship: {member.relationship_with_user}
+      Relationship: {member?.relationship_with_user}
     </Text>
   </View>
 );
@@ -56,9 +56,9 @@ const FamilyDetails = () => {
     { skip: !currentUserInfo?._id, refetchOnMountOrArgChange: true }
   );
 
-  console.log({ data });
+  // console.log({ data });
 
-  const [familyMembers, setFamilyMembers] = useState(data ? [...data] : []);
+  // const [familyMembers, setFamilyMembers] = useState(data ? [...data] : []);
 
   const [addFamilyMember] = useAddFamilyDetailsMutation();
 
@@ -68,7 +68,7 @@ const FamilyDetails = () => {
       user_id: currentUserInfo?._id,
     };
 
-    setFamilyMembers((prev) => [body, ...prev]);
+    // setFamilyMembers((prev) => [body, ...prev]);
     const res = await addFamilyMember(body);
     if (res?.data) {
       reset();
@@ -86,7 +86,7 @@ const FamilyDetails = () => {
   const handleRefresh = () => {
     setRefreshing(true);
     refetch();
-    setFamilyMembers([...data]);
+    // setFamilyMembers([...data]);
     setRefreshing(false);
   };
 
@@ -102,7 +102,7 @@ const FamilyDetails = () => {
           />
         }
       >
-        {familyMembers?.length === 0 && (
+        {data?.length === 0 && (
           <View
             style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
           >
@@ -122,7 +122,7 @@ const FamilyDetails = () => {
             <ActivityIndicator size="large" color="#005b96" />
           </View>
         ) : (
-          familyMembers?.map((member, index) => (
+          data?.map((member, index) => (
             <FamilyMemberCard key={index} member={member} />
           ))
         )}

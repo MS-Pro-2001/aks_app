@@ -7,6 +7,7 @@ const extendedApi = createApiInstance.injectEndpoints({
       transformResponse: (res) => {
         return res;
       },
+      providesTags: ['FETCH_ALL_USER_API'],
     }),
     loginUser: build.mutation({
       query(body) {
@@ -33,18 +34,12 @@ const extendedApi = createApiInstance.injectEndpoints({
       },
     }),
 
-    getSingleUser: build.mutation({
-      query(body) {
-        return {
-          url: 'api/user/fetchSingelUser',
-          method: 'POST',
-          body: body,
-        };
-      },
+    getSingleUser: build.query({
+      query: (query) => `api/user/fetchSingleUser/${query._id}`,
       transformResponse: (res) => {
         return res;
       },
-      // providesTags: ['UserAPI'],
+      providesTags: ['UPDATE_USER_API'],
     }),
     updateUser: build.mutation({
       query(body) {
@@ -57,7 +52,7 @@ const extendedApi = createApiInstance.injectEndpoints({
       transformResponse: (res) => {
         return res;
       },
-      // providesTags: ['UserAPI'],
+      invalidatesTags: ['FETCH_ALL_USER_API', 'UPDATE_USER_API'],
     }),
   }),
 
@@ -67,7 +62,7 @@ const extendedApi = createApiInstance.injectEndpoints({
 export const {
   useRegisterUserMutation,
   useLoginUserMutation,
-  useGetSingleUserMutation,
+  useGetSingleUserQuery,
   useUpdateUserMutation,
   useFetchAllUsersQuery,
 } = extendedApi;

@@ -9,6 +9,7 @@ const extendedApi = createApiInstance.injectEndpoints({
       transformResponse: (res) => {
         return res.reverse();
       },
+      providesTags: ['FETCH_FAMILY_DETAILS'],
     }),
 
     // loginUser: build.mutation({
@@ -60,7 +61,7 @@ const extendedApi = createApiInstance.injectEndpoints({
       transformResponse: (res) => {
         return res;
       },
-      // providesTags: ['UserAPI'],
+      invalidatesTags: ['FETCH_FAMILY_DETAILS'],
     }),
   }),
 

@@ -13,5 +13,6 @@ export const createApiInstance = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://aksbackend-production.up.railway.app',
   }),
+  tagTypes: ['FETCH_ALL_USER_API', 'UPDATE_USER_API', 'FETCH_FAMILY_DETAILS'], // Add your tag types here
   endpoints: (build) => ({}), // No initial endpoints
 });

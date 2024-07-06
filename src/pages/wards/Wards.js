@@ -63,7 +63,7 @@ const Wards = ({ navigation }) => {
     const fetchData = async () => {
       const pin = await AsyncStorage.getItem('mpin');
       const currentUserInfo = await AsyncStorage.getItem('userData');
-      console.log('wards', { pin, currentUserInfo });
+      // console.log('wards', { pin, currentUserInfo });
     };
 
     fetchData();

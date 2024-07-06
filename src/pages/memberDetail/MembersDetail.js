@@ -1,18 +1,30 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { Card, Title, useTheme } from 'react-native-paper';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
+import { ActivityIndicator, Card, Title, useTheme } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../store/user';
+import { useGetSingleUserQuery } from '../../store/apis/user';
+import { FamilyMemberCard } from './../familyDetails/FamilyDetails';
 
 const MembersDetail = ({ navigation, route }) => {
-  const { allUsers, isUserLoggedIn } = useSelector(userSelector);
-
-  const reduxData = useSelector(userSelector);
+  const { isUserLoggedIn } = useSelector(userSelector);
 
   const theme = useTheme();
-  const user = allUsers.find((item) => item?._id === route?.params?.user_id);
+  const userId = route?.params?.user_id;
 
-  console.log({ memberDe: reduxData });
+  const { data, isLoading, isFetching } = useGetSingleUserQuery(
+    { _id: userId },
+    { skip: !userId, refetchOnMountOrArgChange: true }
+  );
+
   useEffect(() => {
     if (!isUserLoggedIn) {
       navigation.navigate('Login');
@@ -21,16 +33,16 @@ const MembersDetail = ({ navigation, route }) => {
 
   const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      alignItems: 'center',
-      paddingVertical: 20, // Optional: Adds vertical padding to the ScrollView
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingHorizontal: 10,
     },
     card: {
-      width: '90%', // Adjust this to control the card width
+      width: '100%',
       padding: 10,
       borderRadius: 10,
       elevation: 3,
-      marginTop: 50,
+      marginVertical: 10,
     },
     image: {
       width: '100%',
@@ -61,60 +73,71 @@ const MembersDetail = ({ navigation, route }) => {
       flex: 2,
       textAlign: 'right',
     },
+    familyContainer: {
+      marginTop: 20,
+    },
+    familyTitle: {
+      fontSize: 25,
+      textAlign: 'center',
+      marginBottom: 10,
+    },
   });
 
+  if (isLoading || isFetching) {
+    return (
+      <ActivityIndicator
+        size="large"
+        style={{ marginTop: 100, display: isLoading ? '' : 'none' }}
+      />
+    );
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Card style={styles.card}>
-        <Image
-          source={
-            user.familyPhoto
-              ? {
-                  uri: user.familyPhoto,
-                }
-              : require('../../assets/images/No_Image_Available.jpg')
-          }
-          style={styles.image}
-        />
-        <Card.Content>
-          <Title style={styles.title}>
-            {user.firstName} {user.lastName}
-          </Title>
-          <View style={styles.detailRow}>
-            <Text style={styles.key}>Phone:</Text>
-            <Text style={styles.value}>{user.phone_no}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.key}>Address:</Text>
-            <Text style={styles.value}>{user.address}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.key}>Ward:</Text>
-            <Text style={styles.value}>{user.ward}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.key}>Date of Birth:</Text>
-            <Text style={styles.value}>{user.dob}</Text>
-          </View>
-          {/* <View style={styles.detailRow}>
-            <Text style={styles.key}>Created At:</Text>
-            <Text style={styles.value}>
-              {new Date(user.createdAt).toLocaleDateString()}
-            </Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.key}>Updated At:</Text>
-            <Text style={styles.value}>
-              {new Date(user.updatedAt).toLocaleDateString()}
-            </Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.key}>Family Details:</Text>
-            <Text style={styles.value}>{user.familyDetails.join(', ')}</Text>
-          </View> */}
-        </Card.Content>
-      </Card>
-    </ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={[styles.familyTitle, { marginBottom: 0 }]}>
+          Personal Details
+        </Text>
+        <Card style={styles.card}>
+          <Image
+            source={
+              data?.familyPhoto
+                ? { uri: data?.familyPhoto }
+                : require('../../assets/images/No_Image_Available.jpg')
+            }
+            style={styles.image}
+          />
+          <Card.Content>
+            <Title style={styles.title}>
+              {data?.firstName} {data?.lastName}
+            </Title>
+            <View style={styles.detailRow}>
+              <Text style={styles.key}>Phone:</Text>
+              <Text style={styles.value}>{data?.phone_no}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.key}>Address:</Text>
+              <Text style={styles.value}>{data?.address}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.key}>Ward:</Text>
+              <Text style={styles.value}>{data?.ward}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.key}>Date of Birth:</Text>
+              <Text style={styles.value}>{data?.dob}</Text>
+            </View>
+          </Card.Content>
+        </Card>
+
+        <View style={styles.familyContainer}>
+          <Text style={styles.familyTitle}>Family Details</Text>
+          {data?.familyDetails?.map((member, index) => (
+            <FamilyMemberCard key={index} member={member} />
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

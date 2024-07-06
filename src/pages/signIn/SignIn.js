@@ -5,14 +5,14 @@ import { Button, HelperText, TextInput, useTheme } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 // import CustomDialog from '../components/CustomSnackBar'
 
-import { UserContext } from '../ContextApi/ContextApi';
+// import { UserContext } from '../ContextApi/ContextApi';
 
 import { Controller, useForm } from 'react-hook-form';
 // import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { loginUser, setCurrentUserInfo } from '../../store/user';
-import { useGetSingleUserMutation } from '../../store/apis/user';
+// import { useGetSingleUserMutation } from '../../store/apis/user';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,9 +91,9 @@ const SignIn = ({ navigation }) => {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
-    reset,
-    clearErrors,
+    // setValue,
+    // reset,
+    // clearErrors,
   } = useForm({
     defaultValues: {
       phoneNumber: '',
@@ -102,17 +102,17 @@ const SignIn = ({ navigation }) => {
 
   const theme = useTheme();
   const dispatch = useDispatch();
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isVisibile, setIsVisibile] = useState(false);
   const [userDataFromFireBase, setUserDataFromFireBase] = useState('');
 
-  const [fetchSingleUser] = useGetSingleUserMutation();
+  // const [fetchSingleUser] = useGetSingleUserMutation();
 
-  const handleUserProfile = async () => {
-    const res = await fetchSingleUser;
-  };
+  // const handleUserProfile = async () => {
+  //   const res = await fetchSingleUser;
+  // };
 
   const onSubmit = async (submittedData) => {
     try {
@@ -144,7 +144,7 @@ const SignIn = ({ navigation }) => {
 
     try {
       const response = await userDataFromFireBase.confirm(otp);
-      console.log(response);
+      // console.log(response);
 
       if (response) {
         Alert.alert('Message', 'Otp successfully verified', [

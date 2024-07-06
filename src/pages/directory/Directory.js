@@ -6,7 +6,6 @@ import { ActivityIndicator } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../store/user';
-import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   searchInputBox: {

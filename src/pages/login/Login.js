@@ -110,7 +110,7 @@ const Login = ({ navigation }) => {
   useEffect(() => {
     const fetchData = async () => {
       const pin = await AsyncStorage.getItem('mpin');
-      console.log({ pin });
+      // console.log({ pin });
 
       if (pin) {
         setIsPinSet(true);
@@ -145,7 +145,7 @@ const Login = ({ navigation }) => {
     const res = await signInUser(data);
 
     if (res?.data) {
-      console.log('loginnn2', res?.data);
+      // console.log('loginnn2', res?.data);
       await AsyncStorage.setItem('userData', JSON.stringify(res?.data?.user));
       dispatch(setCurrentUserInfo(res?.data?.user));
       reset();
