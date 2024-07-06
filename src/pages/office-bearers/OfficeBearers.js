@@ -9,6 +9,9 @@ const styles = StyleSheet.create({
   searchInputBox: {
     margin: 7,
   },
+  container: {
+    flex: 1,
+  },
 
   InputBox: {
     borderWidth: 2,
@@ -52,9 +55,10 @@ const OfficeBearers = () => {
   const [searchedQuery, setSearchedQuery] = useState('');
 
   const { data, isLoading } = useFetchOfficeBearersQuery();
+  console.log({ data, l: data?.length });
 
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchInputBox}>
         <Searchbar
           style={{ borderRadius: 10 }}
@@ -74,43 +78,37 @@ const OfficeBearers = () => {
         <Text style={styles.border} />
       </View>
 
-      <View>
-        <ActivityIndicator
-          size={'large'}
-          style={{ display: `${isLoading ? '' : 'none'}` }}
-        />
-        <SafeAreaView style={styles.container}>
-          <FlatList
-            data={data?.filter((item) =>
-              item.firstName.toLowerCase().includes(searchedQuery.toLowerCase())
-            )}
-            renderItem={({ item }) => {
-              return (
-                <TouchableRipple
-                  key={item.Id}
-                  onPress={() => console.log('pressed')}
-                  rippleColor="rgba(0, 0, 0, .32)"
-                >
+      <ActivityIndicator
+        size={'large'}
+        style={{ display: `${isLoading ? '' : 'none'}` }}
+      />
+      <FlatList
+        data={data?.filter((item) =>
+          item.firstName.toLowerCase().includes(searchedQuery.toLowerCase())
+        )}
+        renderItem={({ item }) => {
+          return (
+            <TouchableRipple
+              key={item.Id}
+              onPress={() => console.log('pressed')}
+              rippleColor="rgba(0, 0, 0, .32)"
+            >
+              <View>
+                <View style={styles.listItem}>
+                  {/* <Text style={styles.photo} ></Text> */}
                   <View>
-                    <View style={styles.listItem}>
-                      {/* <Text style={styles.photo} ></Text> */}
-                      <View>
-                        <Text style={styles.name}>{item?.firstName}</Text>
-                        <Text style={{ color: 'black' }}>
-                          {item?.designation}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text style={styles.border} />
+                    <Text style={styles.name}>{item?.firstName}</Text>
+                    <Text style={{ color: 'black' }}>{item?.designation}</Text>
                   </View>
-                </TouchableRipple>
-              );
-            }}
-            keyExtractor={(item) => item?.Id}
-          />
-        </SafeAreaView>
-      </View>
-    </View>
+                </View>
+                <Text style={styles.border} />
+              </View>
+            </TouchableRipple>
+          );
+        }}
+        keyExtractor={(item) => item?.Id}
+      />
+    </SafeAreaView>
   );
 };
 
