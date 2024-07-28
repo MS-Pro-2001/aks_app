@@ -6,9 +6,8 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
-  Alert,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
@@ -17,9 +16,10 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { SelectList } from 'react-native-dropdown-select-list';
 import { useRegisterUserMutation } from '../../store/apis/user';
-import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, setCurrentUserInfo, userSelector } from '../../store/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomSnackBar from '../../components/common/CustomSnackbar';
+import { wardNames } from '../../utils/constants';
+import { AuthContext } from '../../context/authContext/AuthContext';
 
 const styles = StyleSheet.create({
   box: {
@@ -108,19 +108,13 @@ export const CustomInput = ({
 };
 
 const SignUp = ({ navigation }) => {
-  const { isUserLoggedIn } = useSelector(userSelector);
-
-  const dispatch = useDispatch();
+  const { loginUser } = useContext(AuthContext);
   const [date, setDate] = useState(new Date());
-
-  useEffect(() => {
-    if (isUserLoggedIn) {
-      navigation.navigate('Drawer');
-    }
-  }, [isUserLoggedIn, navigation]);
 
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [selected, setSelected] = React.useState('');
+  const [isVisible, setIsVisible] = React.useState(false);
+
   const {
     control,
     handleSubmit,
@@ -145,48 +139,12 @@ const SignUp = ({ navigation }) => {
     const payload = { ...data, ward: selected };
 
     const res = await registerUser(payload);
+    console.log('User tried to register', { res });
     if (res?.data) {
-      await AsyncStorage.setItem('userData', JSON.stringify(res?.data?.user));
-      dispatch(setCurrentUserInfo(res?.data?.user));
-
-      Alert.alert('Message', 'User Registered Successfully', [
-        {
-          text: 'OK',
-          onPress: async () => {
-            reset();
-            dispatch(loginUser());
-            dispatch(setCurrentUserInfo());
-            navigation.push('Drawer');
-          },
-        },
-      ]);
-    } else {
-      reset();
-      Alert.alert('Warning', res?.error?.data?.msg, [
-        {
-          text: 'OK',
-        },
-      ]);
+      loginUser(res?.data?.user);
+      setIsVisible(true);
     }
   };
-
-  const data = [
-    { key: '1', value: 'Bopal' },
-    { key: '2', value: 'Bapunagar' },
-    { key: '3', value: 'Ghatlodiya' },
-    { key: '4', value: 'Krishnanagar' },
-    { key: '5', value: 'Maninagar' },
-    { key: '6', value: 'Naroda' },
-    { key: '7', value: 'Nirnaynagar' },
-    { key: '8', value: 'Nirnaynagar' },
-    { key: '9', value: 'Noblenagar' },
-    { key: '10', value: 'Odhav' },
-    { key: '11', value: 'Sabarmati' },
-    { key: '12', value: 'Sabarmati' },
-    { key: '13', value: 'Thaltej' },
-    { key: '14', value: 'Vastrapur' },
-    { key: '15', value: 'Vejalpur' },
-  ];
 
   return (
     <>
@@ -273,7 +231,7 @@ const SignUp = ({ navigation }) => {
               setSelected={(val) => {
                 setSelected(val);
               }}
-              data={data}
+              data={wardNames}
               save="value"
               placeholder="Please select a Ward"
               search={false}
@@ -307,7 +265,6 @@ const SignUp = ({ navigation }) => {
               setOpenDatePicker={setOpenDatePicker}
               readonly={true}
             />
-            {/* <Text style={{ color: '#005b96', fontSize: 10 }}>DD-MM-YYYY</Text> */}
 
             <Button
               loading={isLoading}
@@ -337,7 +294,6 @@ const SignUp = ({ navigation }) => {
             onConfirm={() => {
               setOpenDatePicker(false);
               setDate(date);
-              // const formattedDate = date.getDate()+"-"+date.getMonth()+"-"+date.getFullYear()
               const extractedDate = date.toISOString().split('T')[0].split('-');
               const customDate =
                 extractedDate[2] +
@@ -354,6 +310,14 @@ const SignUp = ({ navigation }) => {
             }}
           />
         </SafeAreaView>
+        <CustomSnackBar
+          message={'Registration Successful'}
+          onClose={() => {
+            reset();
+            setIsVisible(false);
+          }}
+          visible={isVisible}
+        />
       </ScrollView>
     </>
   );

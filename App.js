@@ -13,7 +13,7 @@ import { View } from 'react-native';
 
 function App() {
   const { isUserLoggedIn, mPin, isLoading } = React.useContext(AuthContext);
-  console.log('::::::::', { isUserLoggedIn });
+  console.log('qqqqqq', { mPin, isUserLoggedIn });
 
   if (isLoading) {
     return (
@@ -25,15 +25,7 @@ function App() {
 
   return (
     <NavigationContainer>
-      {isUserLoggedIn?.logout ? (
-        mPin ? (
-          <MPINStack />
-        ) : (
-          <AuthStack />
-        )
-      ) : (
-        <AppStack />
-      )}
+      {isUserLoggedIn ? <AppStack /> : mPin ? <MPINStack /> : <AuthStack />}
     </NavigationContainer>
   );
 }

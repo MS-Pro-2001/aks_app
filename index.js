@@ -13,6 +13,7 @@ import {
   PaperProvider,
 } from 'react-native-paper';
 import AuthProvider from './src/context/authContext/AuthContext';
+import CustomSnackBar from './src/components/common/CustomSnackbar';
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -28,6 +29,7 @@ const ReduxApp = () => {
       <PaperProvider theme={theme}>
         <AuthProvider>
           <App />
+          <CustomSnackBar />
         </AuthProvider>
       </PaperProvider>
     </Provider>

@@ -180,8 +180,6 @@ const UserProfile = ({ navigation }) => {
 
   const [updateUser, { data: updateUserData }] = useUpdateUserMutation();
 
-  // console.log('22222222', { updateUserData });
-
   const onSubmit = async (formData) => {
     const body = { ...formData, user_id: data?._id, ward: selected };
     const res = await updateUser(body);

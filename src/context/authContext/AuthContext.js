@@ -1,29 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setCurrentUserInfo } from '../../store/user';
+import React, { createContext, useState } from 'react';
+
+// if user logged in
+//  if user not logged in
 
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const dispatch = useDispatch();
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [userData, setUserData] = useState({});
 
-  const [mPin, setMpin] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      const userCred = await AsyncStorage.getItem('userData');
-      const pin = await AsyncStorage.getItem('mpin');
-      setMpin(pin);
-      dispatch(setCurrentUserInfo(JSON.parse(userCred)));
-      setIsUserLoggedIn(JSON.parse(userCred));
-      console.log({ userCred });
-    };
-    checkUserLoggedIn();
-    setIsLoading(false);
-  }, [dispatch]);
+  const [mPin, setMPin] = useState(null);
+
+  // useEffect(() => {
+  //   const checkUserLoggedIn = async () => {
+  //     const userCred = await AsyncStorage.getItem('userData');
+
+  //   //   console.log('LLLL', JSON.parse(userCred));
+  //   //   const pin = await AsyncStorage.getItem('mpin');
+  //   //   if (!userCred) {
+  //   //     setMPin(null);
+  //   //   } else {
+  //   //     setMPin(pin);
+  //   //   }
+  //   //   dispatch(setCurrentUserInfo(JSON.parse(userCred)));
+  //   //   setIsUserLoggedIn(JSON.parse(userCred));
+  //   // };
+  //   // checkUserLoggedIn();
+  //   // setIsLoading(false);
+  // }, [dispatch]);
 
   const logoutUser = async () => {
     const data = { ...isUserLoggedIn, logout: true };
@@ -31,15 +38,16 @@ const AuthProvider = ({ children }) => {
     setIsUserLoggedIn({});
   };
 
-  const loginUser = async (userData) => {
-    const data = { ...userData, logout: false };
-    await AsyncStorage.setItem('userData', data);
-    setIsUserLoggedIn(data);
+  // if user signUp or Login this will run
+  const loginUser = async (data) => {
+    await AsyncStorage.setItem('userData', JSON.stringify(data));
+    setUserData(data);
+    setIsUserLoggedIn(true);
   };
 
-  const handleMpin = async (mpin) => {
-    await AsyncStorage.setItem('mpin', mpin);
-    setMpin(mpin);
+  const handleMPin = async (pin) => {
+    await AsyncStorage.setItem('mPin', pin);
+    setMPin(pin);
   };
 
   return (
@@ -49,8 +57,9 @@ const AuthProvider = ({ children }) => {
         mPin,
         logoutUser,
         loginUser,
-        handleMpin,
+        handleMPin,
         isLoading,
+        userData,
       }}
     >
       {children}

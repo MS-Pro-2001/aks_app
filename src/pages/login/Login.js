@@ -15,6 +15,7 @@ import { Button, HelperText, TextInput } from 'react-native-paper';
 import { Controller, useForm } from 'react-hook-form';
 import { useLoginUserMutation } from '../../store/apis/user';
 import { AuthContext } from '../../context/authContext/AuthContext';
+// import CustomSnackBar from '../../components/common/CustomSnackbar';
 
 const styles = StyleSheet.create({
   box: {
@@ -102,13 +103,12 @@ export const CustomInput = ({
 const Login = ({ navigation }) => {
   const { loginUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [isPinSet, setIsPinSet] = useState(false);
-
+  const [isPinSet] = useState(false);
+  // const [isVisible, setIsVisible] = React.useState(false);
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     defaultValues: {
       phone_no: '',
@@ -122,13 +122,10 @@ const Login = ({ navigation }) => {
     setIsLoading(true);
 
     const res = await signInUser(data);
-
+    setIsLoading(false);
+    // setIsVisible(true);
     if (res?.data) {
-      // await AsyncStorage.setItem('userData', JSON.stringify(res?.data?.user));
-      // dispatch(setCurrentUserInfo(res?.data?.user));
-      reset();
-      setIsLoading(false);
-      Alert.alert('Message', 'Logged In successfully', [
+      Alert.alert('Message', 'Logged In Successfully', [
         {
           text: 'OK',
           onPress: () => {
@@ -137,8 +134,6 @@ const Login = ({ navigation }) => {
         },
       ]);
     } else {
-      reset();
-      setIsLoading(false);
       Alert.alert('Error', `${res?.error?.data?.msg}`, [
         {
           text: 'OK',
@@ -180,7 +175,6 @@ const Login = ({ navigation }) => {
                 },
               }}
               placeholder={'Phone Number'}
-              // label={"Phone Number"}
               errors={errors}
               keyboardType="numeric"
             />
@@ -221,17 +215,23 @@ const Login = ({ navigation }) => {
               )}
               <Text
                 style={{ color: '#005b96' }}
-                onPress={() => navigation.navigate('SignUp')}
+                onPress={() => {
+                  navigation.navigate('SignUp');
+                }}
               >
                 New user? Register
               </Text>
             </View>
-            {/* <View style={{ alignItems: 'flex-end' }}>
-
-            </View> */}
           </View>
         </SafeAreaView>
       </ScrollView>
+      {/* <CustomSnackBar
+        message={'Logged In Successful'}
+        onClose={() => {
+          reset();
+        }}
+        visible={isVisible}
+      /> */}
     </>
   );
 };
