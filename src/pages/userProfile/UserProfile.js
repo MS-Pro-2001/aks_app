@@ -7,7 +7,7 @@ import {
   Alert,
   Text,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Button,
@@ -15,8 +15,6 @@ import {
   TextInput,
 } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
-// import PhoneInput from 'react-native-phone-number-input';
-// import CustomPhoneInput from '../components/CustomPhoneInput';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useFocusEffect } from '@react-navigation/native';
@@ -26,6 +24,8 @@ import {
 } from '../../store/apis/user';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../store/user';
+import { AuthContext } from '../../context/authContext/AuthContext';
+import { SelectList } from 'react-native-dropdown-select-list';
 
 const styles = StyleSheet.create({
   box: {
@@ -117,8 +117,29 @@ const CustomInput = ({
   );
 };
 
+const wardData = [
+  { key: '1', value: 'Bopal' },
+  { key: '2', value: 'Bapunagar' },
+  { key: '3', value: 'Ghatlodiya' },
+  { key: '4', value: 'Krishnanagar' },
+  { key: '5', value: 'Maninagar' },
+  { key: '6', value: 'Naroda' },
+  { key: '7', value: 'Nirnaynagar' },
+  { key: '8', value: 'Nirnaynagar' },
+  { key: '9', value: 'Noblenagar' },
+  { key: '10', value: 'Odhav' },
+  { key: '11', value: 'Sabarmati' },
+  { key: '12', value: 'Sabarmati' },
+  { key: '13', value: 'Thaltej' },
+  { key: '14', value: 'Vastrapur' },
+  { key: '15', value: 'Vejalpur' },
+];
+
 const UserProfile = ({ navigation }) => {
+  const { isUserLoggedIn } = useContext(AuthContext);
+  console.log('$%%%%%%%%%%%%%%', { isUserLoggedIn });
   const [openDatePicker, setOpenDatePicker] = useState(false);
+  const [selected, setSelected] = React.useState('');
 
   const [updateProfileStatus, setUpdateProfileStatus] = useState(false);
 
@@ -131,9 +152,7 @@ const UserProfile = ({ navigation }) => {
     }, [])
   );
 
-  const { currentUserInfo } = useSelector(userSelector);
-
-  const { _id: userId } = currentUserInfo;
+  const { _id: userId } = JSON.parse(isUserLoggedIn);
 
   const { data, isLoading, isFetching } = useGetSingleUserQuery(
     { _id: userId },
@@ -164,7 +183,7 @@ const UserProfile = ({ navigation }) => {
   // console.log('22222222', { updateUserData });
 
   const onSubmit = async (formData) => {
-    const body = { ...formData, user_id: data?._id };
+    const body = { ...formData, user_id: data?._id, ward: selected };
     const res = await updateUser(body);
 
     const updatedData = res?.data?.user;
@@ -254,6 +273,18 @@ const UserProfile = ({ navigation }) => {
                 placeholder={'Phone Number'}
                 errors={errors}
                 keyboardType="numeric"
+              />
+              <SelectList
+                setSelected={(val) => {
+                  setSelected(val);
+                }}
+                data={wardData}
+                save="value"
+                placeholder="Please select a Ward"
+                search={false}
+                inputStyles={{ color: '#005b96' }}
+                dropdownTextStyles={{ color: '#005b96' }}
+                boxStyles={{ marginBottom: 20, height: 50, color: '#005b96' }}
               />
               <CustomInput
                 updateProfileStatus={updateProfileStatus}

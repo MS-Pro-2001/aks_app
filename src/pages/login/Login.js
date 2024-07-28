@@ -8,15 +8,13 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { Button, HelperText, TextInput } from 'react-native-paper';
 
 import { Controller, useForm } from 'react-hook-form';
 import { useLoginUserMutation } from '../../store/apis/user';
-import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, setCurrentUserInfo, userSelector } from '../../store/user';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../../context/authContext/AuthContext';
 
 const styles = StyleSheet.create({
   box: {
@@ -102,28 +100,9 @@ export const CustomInput = ({
 };
 
 const Login = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const { isUserLoggedIn } = useSelector(userSelector);
+  const { loginUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
   const [isPinSet, setIsPinSet] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const pin = await AsyncStorage.getItem('mpin');
-      // console.log({ pin });
-
-      if (pin) {
-        setIsPinSet(true);
-      }
-    };
-    fetchData();
-  }, [isUserLoggedIn]);
-
-  useEffect(() => {
-    if (isUserLoggedIn) {
-      navigation.navigate('Drawer');
-    }
-  }, [isUserLoggedIn, navigation]);
 
   const {
     control,
@@ -145,17 +124,15 @@ const Login = ({ navigation }) => {
     const res = await signInUser(data);
 
     if (res?.data) {
-      // console.log('loginnn2', res?.data);
-      await AsyncStorage.setItem('userData', JSON.stringify(res?.data?.user));
-      dispatch(setCurrentUserInfo(res?.data?.user));
+      // await AsyncStorage.setItem('userData', JSON.stringify(res?.data?.user));
+      // dispatch(setCurrentUserInfo(res?.data?.user));
       reset();
       setIsLoading(false);
       Alert.alert('Message', 'Logged In successfully', [
         {
           text: 'OK',
           onPress: () => {
-            dispatch(loginUser());
-            navigation.navigate('Home');
+            loginUser(res?.data?.user);
           },
         },
       ]);
@@ -168,9 +145,6 @@ const Login = ({ navigation }) => {
         },
       ]);
     }
-
-    // const res = await registerUser(payload);
-    // console.log({ res });
   };
 
   return (
@@ -247,7 +221,7 @@ const Login = ({ navigation }) => {
               )}
               <Text
                 style={{ color: '#005b96' }}
-                onPress={() => navigation.push('SignUp')}
+                onPress={() => navigation.navigate('SignUp')}
               >
                 New user? Register
               </Text>

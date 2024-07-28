@@ -1,10 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 
 import {
@@ -12,6 +10,7 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
+import { AuthContext } from '../../context/authContext/AuthContext';
 // import { useDispatch } from 'react-redux';
 // import { setMPin } from '../../store/user';
 const styles = StyleSheet.create({
@@ -67,8 +66,7 @@ const styles = StyleSheet.create({
 });
 
 const AddPin = () => {
-  // const dispatch = useDispatch();
-  const navigate = useNavigation();
+  const { handleMpin } = useContext(AuthContext);
   const [isMPinValid, setIsMPinValid] = useState(false);
   const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({ value, cellCount: 4 });
@@ -89,13 +87,7 @@ const AddPin = () => {
       {
         text: 'Yes',
         onPress: async () => {
-          try {
-            await AsyncStorage.setItem('mpin', value);
-            navigate.navigate('Wards');
-          } catch (error) {
-            console.warn('Error setting MPIN');
-          }
-          // dispatch(setMPin({ isSet: true, code: value }));
+          handleMpin(value);
         },
       },
       {

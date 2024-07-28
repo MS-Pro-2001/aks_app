@@ -12,6 +12,7 @@ import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
 } from 'react-native-paper';
+import AuthProvider from './src/context/authContext/AuthContext';
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -25,7 +26,9 @@ const ReduxApp = () => {
   return (
     <Provider store={store}>
       <PaperProvider theme={theme}>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </PaperProvider>
     </Provider>
   );

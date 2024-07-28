@@ -1,76 +1,39 @@
+/* eslint-disable react-native/no-inline-styles */
 // In App.js in a new project
 import 'react-native-gesture-handler';
 import * as React from 'react';
 // import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-// import { HomeScreen } from './src/pages/homeScreen/Home';
-
-import SignUp from './src/pages/signUp/SignUp';
-// import SignIn from './src/pages/signIn/SignIn';
-import DrawerNavigator from './src/navigators/DrawerNavigator';
-import { WardTabsNavigator } from './src/navigators/WardsTabNavigator';
-import Login from './src/pages/login/Login';
-import MembersDetail from './src/pages/memberDetail/MembersDetail';
-import LoginUsingMPin from './src/pages/mPin/LoginUsingPin';
-// import { SafeAreaProvider } from 'react-native-safe-area-context';
-const Stack = createNativeStackNavigator();
+import AuthStack from './src/navigators/AppStack';
+import { AuthContext } from './src/context/authContext/AuthContext';
+import AppStack from './src/navigators/AuthStack';
+import MPINStack from './src/navigators/MPINStack';
+import { ActivityIndicator } from 'react-native-paper';
+import { View } from 'react-native';
 
 function App() {
+  const { isUserLoggedIn, mPin, isLoading } = React.useContext(AuthContext);
+  console.log('::::::::', { isUserLoggedIn });
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <>
-          <Stack.Screen
-            name="Drawer"
-            component={DrawerNavigator}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="WardTabsNavigator"
-            component={WardTabsNavigator}
-            options={{
-              headerShown: true,
-              headerTitle: 'Wards',
-            }}
-          />
-          <Stack.Screen
-            name="MembersDetail"
-            component={MembersDetail}
-            options={{
-              headerShown: true,
-              headerTitle: 'Members Detail',
-            }}
-          />
-        </>
-        <>
-          <Stack.Screen
-            name="LoginUsingMPin"
-            component={LoginUsingMPin}
-            options={{
-              headerShown: false,
-            }}
-          />
-
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{
-              headerShown: false,
-            }}
-          />
-
-          <Stack.Screen
-            name="SignUp"
-            component={SignUp}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </>
-      </Stack.Navigator>
+      {isUserLoggedIn?.logout ? (
+        mPin ? (
+          <MPINStack />
+        ) : (
+          <AuthStack />
+        )
+      ) : (
+        <AppStack />
+      )}
     </NavigationContainer>
   );
 }

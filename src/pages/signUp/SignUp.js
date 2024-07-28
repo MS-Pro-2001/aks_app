@@ -16,10 +16,7 @@ import DatePicker from 'react-native-date-picker';
 import { Controller, useForm } from 'react-hook-form';
 
 import { SelectList } from 'react-native-dropdown-select-list';
-import {
-  useGetSingleUserMutation,
-  useRegisterUserMutation,
-} from '../../store/apis/user';
+import { useRegisterUserMutation } from '../../store/apis/user';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, setCurrentUserInfo, userSelector } from '../../store/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -144,18 +141,14 @@ const SignUp = ({ navigation }) => {
 
   const [registerUser, { isLoading }] = useRegisterUserMutation();
 
-  const [getSingleUser] = useGetSingleUserMutation();
-
   const onSubmit = async (data) => {
     const payload = { ...data, ward: selected };
 
     const res = await registerUser(payload);
     if (res?.data) {
-      const singleUserData = await getSingleUser({ user_id: res?.data?._id });
-      if (singleUserData.data) {
-        dispatch(setCurrentUserInfo(res?.data));
-        await AsyncStorage.setItem('user_data', res?.data);
-      }
+      await AsyncStorage.setItem('userData', JSON.stringify(res?.data?.user));
+      dispatch(setCurrentUserInfo(res?.data?.user));
+
       Alert.alert('Message', 'User Registered Successfully', [
         {
           text: 'OK',
@@ -288,17 +281,6 @@ const SignUp = ({ navigation }) => {
               dropdownTextStyles={{ color: '#005b96' }}
               boxStyles={{ marginBottom: 20, height: 50, color: '#005b96' }}
             />
-
-            {/* <CustomInput
-                control={control}
-                name="ward"
-                validationRules={{
-                  required: { value: true, message: "Ward name is required" },
-                }}
-                placeholder={"Ward"}
-                // label={"Ward"}
-                errors={errors}
-              /> */}
 
             <CustomInput
               control={control}

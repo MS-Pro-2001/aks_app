@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Alert, Image, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +14,7 @@ import {
 } from 'react-native-confirmation-code-field';
 import { loginUser, setCurrentUserInfo, userSelector } from '../../store/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../../context/authContext/AuthContext';
 
 const styles = StyleSheet.create({
   root: { flex: 1, padding: 20 },
@@ -68,8 +69,7 @@ const styles = StyleSheet.create({
 });
 
 const LoginUsingMPin = ({ navigation }) => {
-  const { isUserLoggedIn } = useSelector(userSelector);
-
+  const { loginUser } = useContext(AuthContext);
   const navigate = useNavigation();
   const dispatch = useDispatch();
   // const { MPin } = useSelector(userSelector);
@@ -81,23 +81,6 @@ const LoginUsingMPin = ({ navigation }) => {
     setValue,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const pin = await AsyncStorage.getItem('mpin');
-
-      if (!pin) {
-        navigate.navigate('Login');
-      }
-    };
-    fetchData();
-  }, [isUserLoggedIn, navigate]);
-
-  useEffect(() => {
-    if (isUserLoggedIn) {
-      navigation.navigate('Home');
-    }
-  }, [isUserLoggedIn, navigation]);
-
   const handleInputPin = async (val) => {
     setValue(val);
     const pin = await AsyncStorage.getItem('mpin');
@@ -108,9 +91,9 @@ const LoginUsingMPin = ({ navigation }) => {
     try {
       if (val.length === 4) {
         if (val === pin) {
-          dispatch(loginUser());
+          loginUser();
 
-          navigate.navigate('Home');
+          navigate.navigate('Drawer');
         } else {
           Alert.alert('Error', 'Invalid Pin?', [
             {
