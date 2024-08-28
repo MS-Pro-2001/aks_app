@@ -25,12 +25,6 @@ const MembersDetail = ({ navigation, route }) => {
     { skip: !userId, refetchOnMountOrArgChange: true }
   );
 
-  useEffect(() => {
-    if (!isUserLoggedIn) {
-      navigation.navigate('Login');
-    }
-  }, [isUserLoggedIn, navigation]);
-
   const styles = StyleSheet.create({
     container: {
       flexGrow: 1,
@@ -84,12 +78,7 @@ const MembersDetail = ({ navigation, route }) => {
   });
 
   if (isLoading || isFetching) {
-    return (
-      <ActivityIndicator
-        size="large"
-        style={{ marginTop: 100, display: isLoading ? '' : 'none' }}
-      />
-    );
+    return <ActivityIndicator size="large" style={{ marginTop: 100 }} />;
   }
 
   return (

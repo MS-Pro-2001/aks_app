@@ -18,12 +18,7 @@ import DatePicker from 'react-native-date-picker';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useFocusEffect } from '@react-navigation/native';
-import {
-  useGetSingleUserQuery,
-  useUpdateUserMutation,
-} from '../../store/apis/user';
-import { useSelector } from 'react-redux';
-import { userSelector } from '../../store/user';
+import { useUpdateUserMutation } from '../../store/apis/user';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import { SelectList } from 'react-native-dropdown-select-list';
 
@@ -136,8 +131,7 @@ const wardData = [
 ];
 
 const UserProfile = ({ navigation }) => {
-  const { isUserLoggedIn } = useContext(AuthContext);
-  console.log('$%%%%%%%%%%%%%%', { isUserLoggedIn });
+  const { userData } = useContext(AuthContext);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [selected, setSelected] = React.useState('');
 
@@ -152,12 +146,12 @@ const UserProfile = ({ navigation }) => {
     }, [])
   );
 
-  const { _id: userId } = JSON.parse(isUserLoggedIn);
+  // const { _id: userId } = JSON.parse(isUserLoggedIn);
 
-  const { data, isLoading, isFetching } = useGetSingleUserQuery(
-    { _id: userId },
-    { skip: !userId, refetchOnMountOrArgChange: true }
-  );
+  // const { data, isLoading, isFetching } = useGetSingleUserQuery(
+  //   { _id: userId },
+  //   { skip: !userId, refetchOnMountOrArgChange: true }
+  // );
 
   const {
     control,
@@ -168,31 +162,44 @@ const UserProfile = ({ navigation }) => {
   } = useForm();
 
   useEffect(() => {
-    if (data) {
-      setValue('firstName', data?.firstName || '');
-      setValue('lastName', data?.lastName || '');
-      setValue('address', data?.address || '');
-      setValue('phone_no', data?.phone_no || '');
-      setValue('ward', data?.ward || '');
-      setValue('dob', data?.dob || '');
+    if (userData) {
+      setValue('firstName', userData?.firstName || '');
+      setValue('lastName', userData?.lastName || '');
+      setValue('address', userData?.address || '');
+      setValue('phone_no', userData?.phone_no || '');
+      setValue('ward', userData?.ward || 'Bopal');
+      setValue('dob', userData?.dob || '');
     }
-  }, [data, setValue]);
+  }, [setValue, userData]);
 
   const [updateUser, { data: updateUserData }] = useUpdateUserMutation();
 
+  console.log({ selected });
   const onSubmit = async (formData) => {
-    const body = { ...formData, user_id: data?._id, ward: selected };
+    const body = { ...formData, user_id: userData?._id, ward: selected };
     const res = await updateUser(body);
 
     const updatedData = res?.data?.user;
     // console.log('111111111', updatedData);
     if (res?.data?.user) {
-      setValue('firstName', updatedData?.firstName || ''); // Set firstName default value
-      setValue('lastName', updatedData?.lastName || ''); // Set lastName default value
-      setValue('address', updatedData?.address || ''); // Set address default value
-      setValue('phone_no', updatedData?.phone_no || ''); // Set phoneNumber default value
-      setValue('ward', updatedData?.ward || ''); // Set ward default value
-      setValue('dob', updatedData?.dob || ''); // Set dob default value
+      setValue(
+        'firstName',
+        updateUserData?.user?.firstName || updatedData?.firstName
+      ); // Set firstName default value
+      setValue(
+        'lastName',
+        updateUserData?.user?.lastName || updatedData?.lastName
+      ); // Set lastName default value
+      setValue(
+        'address',
+        updateUserData?.user?.address || updatedData?.address
+      ); // Set address default value
+      setValue(
+        'phone_no',
+        updateUserData?.user?.phone_no || updatedData?.phone_no
+      ); // Set phoneNumber default value
+      setValue('ward', updateUserData?.user?.ward || updatedData?.ward); // Set ward default value
+      setValue('dob', updateUserData?.user?.dob || updatedData?.dob); // Set dob default value
       Alert.alert('Message', 'Profile Updated SuccessFully', [{ text: 'OK' }]);
       setUpdateProfileStatus(false);
     } else {
@@ -200,14 +207,116 @@ const UserProfile = ({ navigation }) => {
     }
   };
 
-  if (isLoading || isFetching) {
+  if (!userData) {
     return (
       <ActivityIndicator
         size={'large'}
-        style={{ marginTop: 100, display: `${isLoading ? '' : 'none'}` }}
+        style={{ marginTop: 100, display: `${!userData ? '' : 'none'}` }}
       />
     );
   }
+
+  const userProfileData = [
+    {
+      label: 'First Name',
+      name: 'firstName',
+      props: {
+        validationRules: {
+          required: { value: true, message: 'First name is required' },
+        },
+      },
+      // placeholder:'', use label instead
+      type: 'input',
+    },
+    {
+      label: 'Last Name',
+      name: 'lastName',
+      props: {
+        validationRules: {
+          required: { value: true, message: 'Last name is required' },
+        },
+      },
+      type: 'input',
+    },
+    {
+      label: 'Address',
+      name: 'address',
+      props: {
+        validationRules: {
+          required: { value: true, message: 'Address is required' },
+        },
+      },
+      type: 'input',
+    },
+    {
+      label: 'Phone Number',
+      name: 'phone_no',
+      props: {
+        validationRules: {
+          required: {
+            value: true,
+            message: 'Phone number is required',
+          },
+          maxLength: {
+            value: 10,
+            message: 'Please enter a valid 10 digit phone number',
+          },
+          minLength: {
+            value: 10,
+            message: 'Please enter a valid 10 digit phone number',
+          },
+          pattern: {
+            value: /^(?:\+?91|0)?[789]\d{9}$/,
+            message: 'Invalid phone number',
+          },
+        },
+      },
+      type: 'input',
+    },
+    {
+      label: 'Please select a ward',
+      name: '',
+      props: {},
+      type: 'selectList',
+    },
+    // {
+    //   label: 'Ward',
+    //   name: 'ward',
+    //   props: {
+    //     validationRules: {
+    //       required: { value: true, message: 'Ward name is required' },
+    //     },
+    //   },
+    //   type: 'input',
+    // },
+    {
+      label: 'Date of Birth',
+      name: 'dob',
+      props: {
+        validationRules: {
+          required: {
+            value: true,
+            message: 'Date of birth is required',
+          },
+          pattern: {
+            value: /^\d{2}-\d{2}-\d{4}$/,
+            message: 'Date of birth should of format DD-MM-YYYY',
+          },
+        },
+        inputTextIcon: (
+          <TextInput.Icon
+            icon="calendar-range"
+            disabled={!updateProfileStatus}
+            onPress={() => setOpenDatePicker(true)}
+          />
+        ),
+        setOpenDatePicker: setOpenDatePicker,
+        readonly: true,
+        editable: false,
+      },
+      type: 'input',
+    },
+  ];
 
   return (
     <ScrollView>
@@ -215,145 +324,99 @@ const UserProfile = ({ navigation }) => {
         <View style={styles.container}>
           {updateProfileStatus ? (
             <>
-              <CustomInput
-                updateProfileStatus={updateProfileStatus}
-                control={control}
-                name="firstName"
-                validationRules={{
-                  required: { value: true, message: 'First name is required' },
+              {userProfileData?.map((item, index) => (
+                <View key={index}>
+                  <Text style={{ fontSize: 15, marginLeft: 2 }}>
+                    {item.label}
+                  </Text>
+                  {item?.type === 'selectList' ? (
+                    <SelectList
+                      setSelected={(val) => {
+                        setSelected(val);
+                      }}
+                      data={wardData}
+                      save="value"
+                      defaultOption={'Bopal'}
+                      placeholder="Please select a Ward"
+                      search={false}
+                      inputStyles={{ color: '#005b96' }}
+                      dropdownTextStyles={{ color: '#005b96' }}
+                      boxStyles={{
+                        marginBottom: 20,
+                        height: 50,
+                        color: '#005b96',
+                      }}
+                    />
+                  ) : (
+                    <CustomInput
+                      updateProfileStatus={updateProfileStatus}
+                      control={control}
+                      name={item.name}
+                      validationRules={item.props.validationRules}
+                      placeholder={item.label}
+                      errors={errors}
+                      {...item.props}
+                    />
+                  )}
+                </View>
+              ))}
+
+              <View
+                style={{
+                  flex: 1,
+                  border: '1px solid red',
+                  flexDirection: 'row-reverse',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: 10,
                 }}
-                placeholder={'First Name'}
-                errors={errors}
-              />
-              <CustomInput
-                updateProfileStatus={updateProfileStatus}
-                control={control}
-                name="lastName"
-                validationRules={{
-                  required: { value: true, message: 'Last name is required' },
-                }}
-                placeholder={'Last Name'}
-                errors={errors}
-              />
-              <CustomInput
-                updateProfileStatus={updateProfileStatus}
-                control={control}
-                name="address"
-                validationRules={{
-                  required: { value: true, message: 'Address is required' },
-                }}
-                placeholder={'Address'}
-                errors={errors}
-                multiline={true}
-              />
-              <CustomInput
-                updateProfileStatus={updateProfileStatus}
-                control={control}
-                name="phone_no"
-                validationRules={{
-                  required: {
-                    value: true,
-                    message: 'Phone number is required',
-                  },
-                  maxLength: {
-                    value: 10,
-                    message: 'Please enter a valid 10 digit phone number',
-                  },
-                  minLength: {
-                    value: 10,
-                    message: 'Please enter a valid 10 digit phone number',
-                  },
-                  pattern: {
-                    value: /^(?:\+?91|0)?[789]\d{9}$/,
-                    message: 'Invalid phone number',
-                  },
-                }}
-                placeholder={'Phone Number'}
-                errors={errors}
-                keyboardType="numeric"
-              />
-              <SelectList
-                setSelected={(val) => {
-                  setSelected(val);
-                }}
-                data={wardData}
-                save="value"
-                placeholder="Please select a Ward"
-                search={false}
-                inputStyles={{ color: '#005b96' }}
-                dropdownTextStyles={{ color: '#005b96' }}
-                boxStyles={{ marginBottom: 20, height: 50, color: '#005b96' }}
-              />
-              <CustomInput
-                updateProfileStatus={updateProfileStatus}
-                control={control}
-                name="ward"
-                validationRules={{
-                  required: { value: true, message: 'Ward name is required' },
-                }}
-                placeholder={'Ward'}
-                errors={errors}
-              />
-              <CustomInput
-                updateProfileStatus={updateProfileStatus}
-                control={control}
-                name="dob"
-                validationRules={{
-                  required: {
-                    value: true,
-                    message: 'Date of birth is required',
-                  },
-                  pattern: {
-                    value: /^\d{2}-\d{2}-\d{4}$/,
-                    message: 'Date of birth should of format DD-MM-YYYY',
-                  },
-                }}
-                inputTextIcon={
-                  <TextInput.Icon
-                    icon="calendar-range"
-                    disabled={!updateProfileStatus}
-                    onPress={() => setOpenDatePicker(true)}
-                  />
-                }
-                placeholder={'Date of birth'}
-                errors={errors}
-                setOpenDatePicker={setOpenDatePicker}
-                readonly={true}
-                editable={false}
-              />
-              <Button
-                loading={false}
-                style={{ marginTop: 5, padding: 2, borderRadius: 4 }}
-                mode="contained"
-                color="#213190"
-                onPress={handleSubmit(onSubmit)}
               >
-                Submit
-              </Button>
-              <Button
-                style={{ marginTop: 5, padding: 2, borderRadius: 4 }}
-                mode="contained"
-                color="#213190"
-                onPress={() => setUpdateProfileStatus(false)}
-              >
-                Cancel
-              </Button>
+                <Button
+                  loading={false}
+                  style={{ marginTop: 5, padding: 2, borderRadius: 4, flex: 1 }}
+                  mode="contained"
+                  color="#213190"
+                  onPress={handleSubmit(onSubmit)}
+                >
+                  Submit
+                </Button>
+                <Button
+                  style={{ marginTop: 5, padding: 2, borderRadius: 4, flex: 1 }}
+                  mode="contained"
+                  color="#213190"
+                  onPress={() => setUpdateProfileStatus(false)}
+                >
+                  Cancel
+                </Button>
+              </View>
             </>
           ) : (
             <>
               <Text style={styles.subHeading}>Name</Text>
               <Text style={styles.text}>
-                {data?.firstName || updateUserData?.firstName}{' '}
-                {data?.lastName || updateUserData?.lastName}
+                {updateUserData?.user?.firstName || userData?.firstName}{' '}
+                {updateUserData?.user?.lastName || userData?.lastName}
               </Text>
               <Text style={styles.subHeading}>Address</Text>
-              <Text style={styles.text}>{data?.address}</Text>
+              <Text style={styles.text}>
+                {' '}
+                {updateUserData?.user?.address || userData?.address}
+              </Text>
               <Text style={styles.subHeading}>Phone Number</Text>
-              <Text style={styles.text}>{data?.phone_no}</Text>
+              <Text style={styles.text}>
+                {' '}
+                {updateUserData?.user?.phone_no || userData?.phone_no}
+              </Text>
               <Text style={styles.subHeading}>Ward</Text>
-              <Text style={styles.text}>{data?.ward}</Text>
+              <Text style={styles.text}>
+                {' '}
+                {updateUserData?.user?.ward || userData?.ward}
+              </Text>
               <Text style={styles.subHeading}>Date of Birth</Text>
-              <Text style={styles.text}>{data?.dob}</Text>
+              <Text style={styles.text}>
+                {' '}
+                {updateUserData?.user?.dob || userData?.dob}
+              </Text>
               <Button
                 loading={false}
                 style={{ marginTop: 35, padding: 2, borderRadius: 4 }}
