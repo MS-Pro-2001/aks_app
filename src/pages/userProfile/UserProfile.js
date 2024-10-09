@@ -19,6 +19,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useUpdateUserMutation } from '../../store/apis/user';
+import { useUpdateUserMutation } from '../../store/apis/user';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import { SelectList } from 'react-native-dropdown-select-list';
 import UploadPhoto from '../../components/UploadPhoto';
@@ -133,6 +134,7 @@ const wardData = [
 
 const UserProfile = ({ navigation }) => {
   const { userData } = useContext(AuthContext);
+  const { userData } = useContext(AuthContext);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [selected, setSelected] = React.useState('');
 
@@ -147,8 +149,13 @@ const UserProfile = ({ navigation }) => {
     }, [])
   );
 
+  // const { _id: userId } = JSON.parse(isUserLoggedIn);
   // const { _id: userId } = userData?._id;
 
+  // const { data, isLoading, isFetching } = useGetSingleUserQuery(
+  //   { _id: userId },
+  //   { skip: !userId, refetchOnMountOrArgChange: true }
+  // );
   // const { data, isLoading, isFetching } = useGetSingleUserQuery(
   //   { _id: userId },
   //   { skip: !userId, refetchOnMountOrArgChange: true }
@@ -170,7 +177,15 @@ const UserProfile = ({ navigation }) => {
       setValue('phone_no', userData?.phone_no || '');
       setValue('ward', userData?.ward || 'Bopal');
       setValue('dob', userData?.dob || '');
+    if (userData) {
+      setValue('firstName', userData?.firstName || '');
+      setValue('lastName', userData?.lastName || '');
+      setValue('address', userData?.address || '');
+      setValue('phone_no', userData?.phone_no || '');
+      setValue('ward', userData?.ward || 'Bopal');
+      setValue('dob', userData?.dob || '');
     }
+  }, [setValue, userData]);
   }, [setValue, userData]);
 
   const [updateUser, { data: updateUserData }] = useUpdateUserMutation();
@@ -179,11 +194,30 @@ const UserProfile = ({ navigation }) => {
 
   const onSubmit = async (formData) => {
     const body = { ...formData, user_id: userData?._id, ward: selected };
+    const body = { ...formData, user_id: userData?._id, ward: selected };
     const res = await updateUser(body);
 
     const updatedData = res?.data?.user;
     // console.log('111111111', updatedData);
     if (res?.data?.user) {
+      setValue(
+        'firstName',
+        updateUserData?.user?.firstName || updatedData?.firstName
+      ); // Set firstName default value
+      setValue(
+        'lastName',
+        updateUserData?.user?.lastName || updatedData?.lastName
+      ); // Set lastName default value
+      setValue(
+        'address',
+        updateUserData?.user?.address || updatedData?.address
+      ); // Set address default value
+      setValue(
+        'phone_no',
+        updateUserData?.user?.phone_no || updatedData?.phone_no
+      ); // Set phoneNumber default value
+      setValue('ward', updateUserData?.user?.ward || updatedData?.ward); // Set ward default value
+      setValue('dob', updateUserData?.user?.dob || updatedData?.dob); // Set dob default value
       setValue(
         'firstName',
         updateUserData?.user?.firstName || updatedData?.firstName
@@ -210,9 +244,11 @@ const UserProfile = ({ navigation }) => {
   };
 
   if (!userData) {
+  if (!userData) {
     return (
       <ActivityIndicator
         size={'large'}
+        style={{ marginTop: 100, display: `${!userData ? '' : 'none'}` }}
         style={{ marginTop: 100, display: `${!userData ? '' : 'none'}` }}
       />
     );
@@ -365,6 +401,8 @@ const UserProfile = ({ navigation }) => {
             <>
               <Text style={styles.subHeading}>Name</Text>
               <Text style={styles.text}>
+                {updateUserData?.user?.firstName || userData?.firstName}{' '}
+                {updateUserData?.user?.lastName || userData?.lastName}
                 {updateUserData?.user?.firstName || userData?.firstName}{' '}
                 {updateUserData?.user?.lastName || userData?.lastName}
               </Text>

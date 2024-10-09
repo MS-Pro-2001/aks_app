@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
+  Alert,
 } from 'react-native';
 import React, { useContext, useState } from 'react';
 
@@ -144,6 +145,22 @@ const SignUp = ({ navigation }) => {
     if (res?.data) {
       loginUser(res?.data?.user);
       setIsVisible(true);
+    }
+    if (res?.data) {
+      Alert.alert('Message', 'Registeration Successful', [
+        {
+          text: 'OK',
+          onPress: () => {
+            loginUser(res?.data?.user);
+          },
+        },
+      ]);
+    } else {
+      Alert.alert('Error', `${res?.error?.data?.msg}`, [
+        {
+          text: 'OK',
+        },
+      ]);
     }
     if (res?.data) {
       Alert.alert('Message', 'Registeration Successful', [

@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  Alert,
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -19,6 +21,7 @@ import {
   useFetchFamilyDetailsQuery,
 } from '../../store/apis/familyDetails';
 import DatePicker from 'react-native-date-picker';
+import { AuthContext } from '../../context/authContext/AuthContext';
 import { AuthContext } from '../../context/authContext/AuthContext';
 
 // Family member card component
@@ -46,6 +49,8 @@ const FamilyDetails = () => {
   });
   const actionSheetRef = useRef();
 
+  const { userData } = useContext(AuthContext);
+
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -54,6 +59,8 @@ const FamilyDetails = () => {
   // const { currentUserInfo } = useSelector(userSelector);
 
   const { data, refetch, isLoading } = useFetchFamilyDetailsQuery(
+    { id: userData?._id },
+    { skip: !userData?._id, refetchOnMountOrArgChange: true }
     { id: userData?._id },
     { skip: !userData?._id, refetchOnMountOrArgChange: true }
   );
@@ -78,6 +85,35 @@ const FamilyDetails = () => {
       user_id: userData?._id,
     };
 
+    // setFamilyMembers((prev) => [body, ...prev]);
+    const res = await addFamilyMember(body);
+    if (res?.data) {
+      Alert.alert('Message', 'Registeration Successful', [
+        {
+          text: 'OK',
+          onPress: () => {
+            reset();
+            hideActionSheet();
+            console.log(`Family Member added by ${userData?.firstName}`, {
+              res,
+            });
+          },
+        },
+      ]);
+    } else {
+      Alert.alert('Error', `${res?.error?.data?.msg}`, [
+        {
+          text: 'OK',
+        },
+      ]);
+    }
+  };
+
+  const onSubmit = async (formData) => {
+    const body = {
+      ...formData,
+      user_id: userData?._id,
+    };
     // setFamilyMembers((prev) => [body, ...prev]);
     const res = await addFamilyMember(body);
     if (res?.data) {
@@ -205,6 +241,7 @@ const FamilyDetails = () => {
           />
         </View>
         <Button
+          loading={isAddFamilyMemberLoading || isFetching}
           loading={isAddFamilyMemberLoading || isFetching}
           style={{ margin: 10, padding: 2, borderRadius: 4 }}
           mode="contained"

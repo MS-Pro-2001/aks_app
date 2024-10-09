@@ -74,12 +74,7 @@ const MembersDetail = ({ navigation, route }) => {
   });
 
   if (isLoading || isFetching) {
-    return (
-      <ActivityIndicator
-        size="large"
-        style={{ marginTop: 100, display: isLoading ? '' : 'none' }}
-      />
-    );
+    return <ActivityIndicator size="large" style={{ marginTop: 100 }} />;
   }
 
   return (
