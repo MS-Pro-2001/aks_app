@@ -6,6 +6,7 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
+  Alert,
 } from 'react-native';
 import React, { useContext, useState } from 'react';
 
@@ -16,7 +17,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { SelectList } from 'react-native-dropdown-select-list';
 import { useRegisterUserMutation } from '../../store/apis/user';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomSnackBar from '../../components/common/CustomSnackbar';
 import { wardNames } from '../../utils/constants';
 import { AuthContext } from '../../context/authContext/AuthContext';
@@ -143,6 +144,22 @@ const SignUp = ({ navigation }) => {
     if (res?.data) {
       loginUser(res?.data?.user);
       setIsVisible(true);
+    }
+    if (res?.data) {
+      Alert.alert('Message', 'Registeration Successful', [
+        {
+          text: 'OK',
+          onPress: () => {
+            loginUser(res?.data?.user);
+          },
+        },
+      ]);
+    } else {
+      Alert.alert('Error', `${res?.error?.data?.msg}`, [
+        {
+          text: 'OK',
+        },
+      ]);
     }
   };
 

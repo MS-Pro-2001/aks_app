@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ActionSheet from 'react-native-actions-sheet';
@@ -17,9 +18,8 @@ import {
   useAddFamilyDetailsMutation,
   useFetchFamilyDetailsQuery,
 } from '../../store/apis/familyDetails';
-import { useSelector } from 'react-redux';
-import { userSelector } from '../../store/user';
 import DatePicker from 'react-native-date-picker';
+import { AuthContext } from '../../context/authContext/AuthContext';
 
 // Family member card component
 export const FamilyMemberCard = ({ member }) => (
@@ -49,38 +49,57 @@ const FamilyDetails = () => {
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { currentUserInfo } = useSelector(userSelector);
+  const { userData } = useContext(AuthContext);
+
+  // const { currentUserInfo } = useSelector(userSelector);
 
   const { data, refetch, isLoading } = useFetchFamilyDetailsQuery(
-    { id: currentUserInfo?._id },
-    { skip: !currentUserInfo?._id, refetchOnMountOrArgChange: true }
+    { id: userData?._id },
+    { skip: !userData?._id, refetchOnMountOrArgChange: true }
   );
 
   // console.log({ data });
 
   // const [familyMembers, setFamilyMembers] = useState(data ? [...data] : []);
 
-  const [addFamilyMember] = useAddFamilyDetailsMutation();
-
-  const onSubmit = async (formData) => {
-    const body = {
-      ...formData,
-      user_id: currentUserInfo?._id,
-    };
-
-    // setFamilyMembers((prev) => [body, ...prev]);
-    const res = await addFamilyMember(body);
-    if (res?.data) {
-      reset();
-      hideActionSheet();
-    }
-  };
+  const [addFamilyMember, { isLoading: isAddFamilyMemberLoading, isFetching }] =
+    useAddFamilyDetailsMutation();
 
   const showActionSheet = () => {
     actionSheetRef.current?.show();
   };
   const hideActionSheet = () => {
     actionSheetRef.current?.hide();
+  };
+
+  const onSubmit = async (formData) => {
+    const body = {
+      ...formData,
+      user_id: userData?._id,
+    };
+
+    // setFamilyMembers((prev) => [body, ...prev]);
+    const res = await addFamilyMember(body);
+    if (res?.data) {
+      Alert.alert('Message', 'Registeration Successful', [
+        {
+          text: 'OK',
+          onPress: () => {
+            reset();
+            hideActionSheet();
+            console.log(`Family Member added by ${userData?.firstName}`, {
+              res,
+            });
+          },
+        },
+      ]);
+    } else {
+      Alert.alert('Error', `${res?.error?.data?.msg}`, [
+        {
+          text: 'OK',
+        },
+      ]);
+    }
   };
 
   const handleRefresh = () => {
@@ -186,7 +205,7 @@ const FamilyDetails = () => {
           />
         </View>
         <Button
-          loading={false}
+          loading={isAddFamilyMemberLoading || isFetching}
           style={{ margin: 10, padding: 2, borderRadius: 4 }}
           mode="contained"
           color="#213190"

@@ -9,14 +9,10 @@ import {
   ScrollView,
 } from 'react-native';
 import { ActivityIndicator, Card, Title, useTheme } from 'react-native-paper';
-import { useSelector } from 'react-redux';
-import { userSelector } from '../../store/user';
 import { useGetSingleUserQuery } from '../../store/apis/user';
 import { FamilyMemberCard } from './../familyDetails/FamilyDetails';
 
 const MembersDetail = ({ navigation, route }) => {
-  const { isUserLoggedIn } = useSelector(userSelector);
-
   const theme = useTheme();
   const userId = route?.params?.user_id;
 
@@ -24,12 +20,6 @@ const MembersDetail = ({ navigation, route }) => {
     { _id: userId },
     { skip: !userId, refetchOnMountOrArgChange: true }
   );
-
-  useEffect(() => {
-    if (!isUserLoggedIn) {
-      navigation.navigate('Login');
-    }
-  }, [isUserLoggedIn, navigation]);
 
   const styles = StyleSheet.create({
     container: {

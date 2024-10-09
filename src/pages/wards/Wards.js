@@ -59,15 +59,15 @@ const Wards = ({ navigation }) => {
   const dispatch = useDispatch();
   const { data: allUsersData } = useFetchAllUsersQuery();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const pin = await AsyncStorage.getItem('mpin');
-      const currentUserInfo = await AsyncStorage.getItem('userData');
-      // console.log('wards', { pin, currentUserInfo });
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     // const pin = await AsyncStorage.getItem('mpin');
+  //     // const currentUserInfo = await AsyncStorage.getItem('userData');
+  //     // console.log('wards', { pin, currentUserInfo });
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     dispatch(setAllUsers(allUsersData));

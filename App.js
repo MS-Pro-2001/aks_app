@@ -7,13 +7,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import AuthStack from './src/navigators/AppStack';
 import { AuthContext } from './src/context/authContext/AuthContext';
 import AppStack from './src/navigators/AuthStack';
-import MPINStack from './src/navigators/MPINStack';
 import { ActivityIndicator } from 'react-native-paper';
 import { View } from 'react-native';
 
 function App() {
-  const { isUserLoggedIn, mPin, isLoading } = React.useContext(AuthContext);
-  console.log('qqqqqq', { mPin, isUserLoggedIn });
+  const { isUserLoggedIn, isLoading } = React.useContext(AuthContext);
 
   if (isLoading) {
     return (
@@ -25,7 +23,8 @@ function App() {
 
   return (
     <NavigationContainer>
-      {isUserLoggedIn ? <AppStack /> : mPin ? <MPINStack /> : <AuthStack />}
+      {/* {isUserLoggedIn ? <AppStack /> : mPin ? <MPINStack /> : <AuthStack />} */}
+      {isUserLoggedIn ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );
 }

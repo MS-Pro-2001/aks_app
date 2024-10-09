@@ -18,14 +18,10 @@ import DatePicker from 'react-native-date-picker';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useFocusEffect } from '@react-navigation/native';
-import {
-  useGetSingleUserQuery,
-  useUpdateUserMutation,
-} from '../../store/apis/user';
-import { useSelector } from 'react-redux';
-import { userSelector } from '../../store/user';
+import { useUpdateUserMutation } from '../../store/apis/user';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import { SelectList } from 'react-native-dropdown-select-list';
+import UploadPhoto from '../../components/UploadPhoto';
 
 const styles = StyleSheet.create({
   box: {
@@ -136,8 +132,7 @@ const wardData = [
 ];
 
 const UserProfile = ({ navigation }) => {
-  const { isUserLoggedIn } = useContext(AuthContext);
-  console.log('$%%%%%%%%%%%%%%', { isUserLoggedIn });
+  const { userData } = useContext(AuthContext);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [selected, setSelected] = React.useState('');
 
@@ -152,12 +147,12 @@ const UserProfile = ({ navigation }) => {
     }, [])
   );
 
-  const { _id: userId } = JSON.parse(isUserLoggedIn);
+  // const { _id: userId } = userData?._id;
 
-  const { data, isLoading, isFetching } = useGetSingleUserQuery(
-    { _id: userId },
-    { skip: !userId, refetchOnMountOrArgChange: true }
-  );
+  // const { data, isLoading, isFetching } = useGetSingleUserQuery(
+  //   { _id: userId },
+  //   { skip: !userId, refetchOnMountOrArgChange: true }
+  // );
 
   const {
     control,
@@ -168,31 +163,45 @@ const UserProfile = ({ navigation }) => {
   } = useForm();
 
   useEffect(() => {
-    if (data) {
-      setValue('firstName', data?.firstName || '');
-      setValue('lastName', data?.lastName || '');
-      setValue('address', data?.address || '');
-      setValue('phone_no', data?.phone_no || '');
-      setValue('ward', data?.ward || '');
-      setValue('dob', data?.dob || '');
+    if (userData) {
+      setValue('firstName', userData?.firstName || '');
+      setValue('lastName', userData?.lastName || '');
+      setValue('address', userData?.address || '');
+      setValue('phone_no', userData?.phone_no || '');
+      setValue('ward', userData?.ward || 'Bopal');
+      setValue('dob', userData?.dob || '');
     }
-  }, [data, setValue]);
+  }, [setValue, userData]);
 
   const [updateUser, { data: updateUserData }] = useUpdateUserMutation();
 
+  console.log({ userData });
+
   const onSubmit = async (formData) => {
-    const body = { ...formData, user_id: data?._id, ward: selected };
+    const body = { ...formData, user_id: userData?._id, ward: selected };
     const res = await updateUser(body);
 
     const updatedData = res?.data?.user;
     // console.log('111111111', updatedData);
     if (res?.data?.user) {
-      setValue('firstName', updatedData?.firstName || ''); // Set firstName default value
-      setValue('lastName', updatedData?.lastName || ''); // Set lastName default value
-      setValue('address', updatedData?.address || ''); // Set address default value
-      setValue('phone_no', updatedData?.phone_no || ''); // Set phoneNumber default value
-      setValue('ward', updatedData?.ward || ''); // Set ward default value
-      setValue('dob', updatedData?.dob || ''); // Set dob default value
+      setValue(
+        'firstName',
+        updateUserData?.user?.firstName || updatedData?.firstName
+      ); // Set firstName default value
+      setValue(
+        'lastName',
+        updateUserData?.user?.lastName || updatedData?.lastName
+      ); // Set lastName default value
+      setValue(
+        'address',
+        updateUserData?.user?.address || updatedData?.address
+      ); // Set address default value
+      setValue(
+        'phone_no',
+        updateUserData?.user?.phone_no || updatedData?.phone_no
+      ); // Set phoneNumber default value
+      setValue('ward', updateUserData?.user?.ward || updatedData?.ward); // Set ward default value
+      setValue('dob', updateUserData?.user?.dob || updatedData?.dob); // Set dob default value
       Alert.alert('Message', 'Profile Updated SuccessFully', [{ text: 'OK' }]);
       setUpdateProfileStatus(false);
     } else {
@@ -200,11 +209,11 @@ const UserProfile = ({ navigation }) => {
     }
   };
 
-  if (isLoading || isFetching) {
+  if (!userData) {
     return (
       <ActivityIndicator
         size={'large'}
-        style={{ marginTop: 100, display: `${isLoading ? '' : 'none'}` }}
+        style={{ marginTop: 100, display: `${!userData ? '' : 'none'}` }}
       />
     );
   }
@@ -213,6 +222,7 @@ const UserProfile = ({ navigation }) => {
     <ScrollView>
       <SafeAreaView>
         <View style={styles.container}>
+          <UploadPhoto userData={userData} />
           {updateProfileStatus ? (
             <>
               <CustomInput
@@ -278,6 +288,7 @@ const UserProfile = ({ navigation }) => {
                 }}
                 data={wardData}
                 save="value"
+                defaultOption="Bopal"
                 placeholder="Please select a Ward"
                 search={false}
                 inputStyles={{ color: '#005b96' }}
@@ -321,39 +332,58 @@ const UserProfile = ({ navigation }) => {
                 readonly={true}
                 editable={false}
               />
-              <Button
-                loading={false}
-                style={{ marginTop: 5, padding: 2, borderRadius: 4 }}
-                mode="contained"
-                color="#213190"
-                onPress={handleSubmit(onSubmit)}
+              <View
+                style={{
+                  flex: 1,
+                  border: '1px solid red',
+                  flexDirection: 'row-reverse',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: 10,
+                }}
               >
-                Submit
-              </Button>
-              <Button
-                style={{ marginTop: 5, padding: 2, borderRadius: 4 }}
-                mode="contained"
-                color="#213190"
-                onPress={() => setUpdateProfileStatus(false)}
-              >
-                Cancel
-              </Button>
+                <Button
+                  loading={false}
+                  style={{ marginTop: 5, padding: 2, borderRadius: 4, flex: 1 }}
+                  mode="contained"
+                  color="#213190"
+                  onPress={handleSubmit(onSubmit)}
+                >
+                  Submit
+                </Button>
+                <Button
+                  style={{ marginTop: 5, padding: 2, borderRadius: 4, flex: 1 }}
+                  mode="contained"
+                  color="#213190"
+                  onPress={() => setUpdateProfileStatus(false)}
+                >
+                  Cancel
+                </Button>
+              </View>
             </>
           ) : (
             <>
               <Text style={styles.subHeading}>Name</Text>
               <Text style={styles.text}>
-                {data?.firstName || updateUserData?.firstName}{' '}
-                {data?.lastName || updateUserData?.lastName}
+                {updateUserData?.user?.firstName || userData?.firstName}{' '}
+                {updateUserData?.user?.lastName || userData?.lastName}
               </Text>
               <Text style={styles.subHeading}>Address</Text>
-              <Text style={styles.text}>{data?.address}</Text>
+              <Text style={styles.text}>
+                {updateUserData?.user?.address || userData?.address}
+              </Text>
               <Text style={styles.subHeading}>Phone Number</Text>
-              <Text style={styles.text}>{data?.phone_no}</Text>
+              <Text style={styles.text}>
+                {updateUserData?.user?.phone_no || userData?.phone_no}
+              </Text>
               <Text style={styles.subHeading}>Ward</Text>
-              <Text style={styles.text}>{data?.ward}</Text>
+              <Text style={styles.text}>
+                {updateUserData?.user?.ward || userData?.ward}
+              </Text>
               <Text style={styles.subHeading}>Date of Birth</Text>
-              <Text style={styles.text}>{data?.dob}</Text>
+              <Text style={styles.text}>
+                {updateUserData?.user?.dob || userData?.dob}
+              </Text>
               <Button
                 loading={false}
                 style={{ marginTop: 35, padding: 2, borderRadius: 4 }}
