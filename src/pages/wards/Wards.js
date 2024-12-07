@@ -13,7 +13,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useDispatch } from 'react-redux';
 import { setAllUsers } from '../../store/user';
 import { useFetchAllUsersQuery } from '../../store/apis/user';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 const wards = [

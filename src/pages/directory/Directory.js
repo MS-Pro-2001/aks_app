@@ -124,7 +124,7 @@ const Directory = ({ route, navigation }) => {
                           {item?.familyPhoto ? (
                             <Avatar.Image
                               size={48}
-                              source={require('../../assets/images/No_Image_Available.jpg')}
+                              source={{ uri: item?.familyPhoto }}
                             />
                           ) : (
                             <Avatar.Text

@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
-  Alert,
 } from 'react-native';
 import React, { useContext, useState } from 'react';
 

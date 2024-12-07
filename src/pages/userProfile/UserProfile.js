@@ -19,7 +19,6 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useUpdateUserMutation } from '../../store/apis/user';
-import { useUpdateUserMutation } from '../../store/apis/user';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import { SelectList } from 'react-native-dropdown-select-list';
 import UploadPhoto from '../../components/UploadPhoto';
@@ -134,7 +133,6 @@ const wardData = [
 
 const UserProfile = ({ navigation }) => {
   const { userData } = useContext(AuthContext);
-  const { userData } = useContext(AuthContext);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [selected, setSelected] = React.useState('');
 
@@ -177,15 +175,7 @@ const UserProfile = ({ navigation }) => {
       setValue('phone_no', userData?.phone_no || '');
       setValue('ward', userData?.ward || 'Bopal');
       setValue('dob', userData?.dob || '');
-    if (userData) {
-      setValue('firstName', userData?.firstName || '');
-      setValue('lastName', userData?.lastName || '');
-      setValue('address', userData?.address || '');
-      setValue('phone_no', userData?.phone_no || '');
-      setValue('ward', userData?.ward || 'Bopal');
-      setValue('dob', userData?.dob || '');
     }
-  }, [setValue, userData]);
   }, [setValue, userData]);
 
   const [updateUser, { data: updateUserData }] = useUpdateUserMutation();
@@ -193,7 +183,6 @@ const UserProfile = ({ navigation }) => {
   console.log({ userData });
 
   const onSubmit = async (formData) => {
-    const body = { ...formData, user_id: userData?._id, ward: selected };
     const body = { ...formData, user_id: userData?._id, ward: selected };
     const res = await updateUser(body);
 
@@ -216,7 +205,7 @@ const UserProfile = ({ navigation }) => {
         'phone_no',
         updateUserData?.user?.phone_no || updatedData?.phone_no
       ); // Set phoneNumber default value
-      setValue('ward', updateUserData?.user?.ward || updatedData?.ward); // Set ward default value
+      // setValue('ward', updateUserData?.user?.ward || updatedData?.ward); // Set ward default value
       setValue('dob', updateUserData?.user?.dob || updatedData?.dob); // Set dob default value
       setValue(
         'firstName',
@@ -244,15 +233,23 @@ const UserProfile = ({ navigation }) => {
   };
 
   if (!userData) {
-  if (!userData) {
     return (
       <ActivityIndicator
         size={'large'}
         style={{ marginTop: 100, display: `${!userData ? '' : 'none'}` }}
-        style={{ marginTop: 100, display: `${!userData ? '' : 'none'}` }}
       />
     );
   }
+
+  console.log(
+    updateUserData?.user?.ward || userData?.ward,
+    wardData?.find(
+      (ward) =>
+        ward.value.toLowerCase() ===
+        (updateUserData?.user?.ward?.toLowerCase() ||
+          userData?.ward?.toLowerCase())
+    )
+  );
 
   return (
     <ScrollView>
@@ -318,20 +315,29 @@ const UserProfile = ({ navigation }) => {
                 errors={errors}
                 keyboardType="numeric"
               />
-              <SelectList
-                setSelected={(val) => {
-                  setSelected(val);
-                }}
-                data={wardData}
-                save="value"
-                defaultOption="Bopal"
-                placeholder="Please select a Ward"
-                search={false}
-                inputStyles={{ color: '#005b96' }}
-                dropdownTextStyles={{ color: '#005b96' }}
-                boxStyles={{ marginBottom: 20, height: 50, color: '#005b96' }}
-              />
-              <CustomInput
+              {userData && (
+                <SelectList
+                  setSelected={(val) => {
+                    setSelected(val);
+                  }}
+                  data={wardData}
+                  save="value"
+                  defaultOption={wardData?.find(
+                    (ward) =>
+                      ward.value?.toLowerCase() ===
+                      (
+                        updateUserData?.user?.ward || userData?.ward
+                      )?.toLowerCase()
+                  )}
+                  placeholder="Please select a Ward"
+                  search={true}
+                  inputStyles={{ color: '#005b96' }}
+                  dropdownTextStyles={{ color: '#005b96' }}
+                  boxStyles={{ marginBottom: 20, height: 50, color: '#005b96' }}
+                  dropdownStyles={{ marginBottom: 20 }}
+                />
+              )}
+              {/* <CustomInput
                 updateProfileStatus={updateProfileStatus}
                 control={control}
                 name="ward"
@@ -340,7 +346,7 @@ const UserProfile = ({ navigation }) => {
                 }}
                 placeholder={'Ward'}
                 errors={errors}
-              />
+              /> */}
               <CustomInput
                 updateProfileStatus={updateProfileStatus}
                 control={control}
@@ -401,8 +407,6 @@ const UserProfile = ({ navigation }) => {
             <>
               <Text style={styles.subHeading}>Name</Text>
               <Text style={styles.text}>
-                {updateUserData?.user?.firstName || userData?.firstName}{' '}
-                {updateUserData?.user?.lastName || userData?.lastName}
                 {updateUserData?.user?.firstName || userData?.firstName}{' '}
                 {updateUserData?.user?.lastName || userData?.lastName}
               </Text>

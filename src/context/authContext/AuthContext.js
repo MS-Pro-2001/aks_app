@@ -63,8 +63,10 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkUserLoggedIn = async () => {
       const userCred = await AsyncStorage.getItem('userData');
-      setUserData(JSON.parse(userCred));
-      setIsUserLoggedIn(!!Object.keys(JSON.parse(userCred))?.length);
+      if (userCred) {
+        setUserData(JSON.parse(userCred));
+        setIsUserLoggedIn(!!Object.keys(JSON.parse(userCred))?.length);
+      }
 
       // const pin = await AsyncStorage.getItem('mpin');
       // if (!userCred) {

@@ -34,8 +34,9 @@ const UploadPhoto = ({ userData }) => {
             {
               mediaType: 'photo',
               includeBase64: false,
-              maxHeight: 200,
-              maxWidth: 200,
+              maxHeight: 600, // Increase height
+              maxWidth: 600, // Increase width
+              quality: 1, // Set quality to 1 for the best resolution
             },
             async (res) => {
               const result = await uploadFamilyPhoto({
@@ -72,9 +73,9 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200,
+    height: 320, // Let the height adjust proportionally
+    aspectRatio: 1, // Maintain aspect ratio for better quality
     borderRadius: 10,
     marginBottom: 10,
-    objectFit: 'fill',
   },
 });
